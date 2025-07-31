@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>labitbu.com</title>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id="labitbu-container">
+        <h1 style="text-align: center; color: #333;">labitbu.com</h1>
+        <div class="github-container">
+            <a class="github-button" href="https://github.com/stutxo/labitbu" data-show-count="true"
+                aria-label="Star stutxo/labitbu on GitHub"></a>
+        </div>
+    </div>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://mempool.space/mempool.js"></script>
+    <script type="module">
+    import init, { create_deposit_address } from './pkg/labitbu.js';
+    await init();
+    </script>
+</body>
+
+</html>

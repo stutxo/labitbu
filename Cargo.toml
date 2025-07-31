@@ -1,0 +1,33 @@
+[package]
+name = "labitbu"
+version = "0.1.0"
+edition = "2021"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Oz", "--enable-bulk-memory", "--enable-nontrapping-float-to-int"]
+
+[dependencies]
+wasm-bindgen = "0.2.100"
+bitcoin = { version = "0.32.6", default-features = false, features = [
+    "std",
+    "serde",
+    "secp-recovery",
+    "rand",
+] }
+secp256k1 = { version = "0.29.0", features = [
+    "global-context",
+    "serde",
+    "rand",
+] }
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[profile.release]
+strip = true
+lto = true
+opt-level = 'z'
+codegen-units = 1
+panic = "abort"
+incremental = false
