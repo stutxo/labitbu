@@ -1,0 +1,15 @@
+{
+  "name": "labitbu",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "labitbu_bg.wasm",
+    "labitbu.js",
+    "labitbu.d.ts"
+  ],
+  "main": "labitbu.js",
+  "types": "labitbu.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
