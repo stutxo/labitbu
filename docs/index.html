@@ -7,6 +7,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>labitbu.com</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        #labitbu-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .github-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .labubu-generator {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .generator-title {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .generator-title::before,
+        .generator-title::after {
+            content: "🔑";
+            font-size: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .seed-input {
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+            text-align: center;
+        }
+        
+        .seed-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .labubu-display {
+            text-align: center;
+            margin-top: 20px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed #ddd;
+        }
+        
+        .labubu-display img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: #218838;
+        }
     </style>
 </head>
 
@@ -17,12 +167,113 @@
             <a class="github-button" href="https://github.com/stutxo/labitbu" data-show-count="true"
                 aria-label="Star stutxo/labitbu on GitHub"></a>
         </div>
+        
+        <div class="labubu-generator">
+            <div class="generator-title">Generate Labubu!</div>
+            
+            <div class="input-group">
+                <input type="number" id="seed-input" class="seed-input" placeholder="Enter seed number..." min="0">
+                <button id="generate-btn" class="generate-btn">Generate Labubu</button>
+            </div>
+            
+            <div id="labubu-display" class="labubu-display">
+                <div class="loading">Enter a seed and click generate to create your labubu!</div>
+            </div>
+        </div>
     </div>
+    
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://mempool.space/mempool.js"></script>
+    <script src="labubu-generator.js"></script>
     <script type="module">
     import init, { create_deposit_address } from './pkg/labitbu.js';
     await init();
+    
+    // Labubu Generator Interface
+    document.addEventListener('DOMContentLoaded', function() {
+        const seedInput = document.getElementById('seed-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const labubuDisplay = document.getElementById('labubu-display');
+        
+        let currentCanvas = null;
+        
+        // Initialize the labubu generator
+        const generator = new LabubuGenerator();
+        
+        // Set placeholder hex strings (you'll need to fill these in)
+        generator.setLabubus([
+            "", // normal
+            "", // sad
+            "", // angry
+            ""  // sleepy
+        ]);
+        
+        generator.setAccessories([
+            "", // pink glasses
+            ""  // silly
+        ]);
+        
+        // Generate random seed on page load
+        seedInput.value = Math.floor(Math.random() * 1000000);
+        
+        generateBtn.addEventListener('click', async function() {
+            const seed = parseInt(seedInput.value);
+            
+            if (isNaN(seed) || seed < 0) {
+                showError('Please enter a valid positive number for the seed.');
+                return;
+            }
+            
+            // Show loading state
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            labubuDisplay.innerHTML = '<div class="loading">Generating your labubu...</div>';
+            
+            try {
+                // Generate the labubu
+                currentCanvas = await generator.labubuMaker(seed);
+                
+                // Display the labubu
+                const img = document.createElement('img');
+                img.src = currentCanvas.toDataURL('image/png');
+                img.alt = 'Generated Labubu';
+                
+                // Create download button
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn';
+                downloadBtn.textContent = 'Download Labubu';
+                downloadBtn.onclick = () => {
+                    if (currentCanvas) {
+                        generator.downloadLabubu(currentCanvas, `labubu-${seed}.png`);
+                    }
+                };
+                
+                // Clear display and add new content
+                labubuDisplay.innerHTML = '';
+                labubuDisplay.appendChild(img);
+                labubuDisplay.appendChild(downloadBtn);
+                
+            } catch (error) {
+                console.error('Error generating labubu:', error);
+                showError('Failed to generate labubu. Please check that the hex strings are properly set.');
+            } finally {
+                // Reset button state
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Labubu';
+            }
+        });
+        
+        function showError(message) {
+            labubuDisplay.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        // Allow Enter key to generate
+        seedInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateBtn.click();
+            }
+        });
+    });
     </script>
 </body>
 
