@@ -1,15 +1,15 @@
 /**
- * Labubu NFT Generator
- * JavaScript version of the Rust labubu_maker function
+ * Labitbu NFT Generator
+ * JavaScript version of the Rust labitbu_maker function
  */
 
-class LabubuGenerator {
+class LabitbuGenerator {
     constructor() {
         this.canvas = null;
         this.ctx = null;
         
-        // Base labubu images (PNG hex strings - to be filled in later)
-        this.labubus = [
+        // Base labitbu images (PNG hex strings - to be filled in later)
+        this.labitbus = [
             /*normal*/ "89504e470d0a1a0a0000000d494844520000002d0000003b0806000000ef95031c000000017352474200aece1ce900000044655849664d4d002a00000008000187690004000000010000001a000000000003a00100030000000100010000a0020004000000010000002da0030004000000010000003b00000000a908677200000a74494441546805add8c98b544b1305f052db7956d085a22b51410577e2bc101c5137e2ffe8c6010710178a20ba72441782a88838e23c0fefeb5f3ccf7dd76b7575095fc0adcc8c8ce1c4c9c85bd53de19f51e90d2913274eec319f30614233fefcf97348ef7fcdf8c65f3cfe7f01a1824cfcab8ca3c6129224aec55f7c004af8039c787f11a237328cb1c09e8b172f96b9f9ecd9b37b93264dea05c4788c8f8c8cf47efcf8d1bb73e74eefe3c78fbdc99327f7debc7953c0c510d3fe303214d30292004b8b7cfbf66de8a305489c0036f7289cfc4d8b0c643a60cf9c3953cc5887d9e7cf9ff7be7cf9d23b7bf66c25c45c984a71c0c4c7fef7efdf7baf5fbfaee2d9ce9c3993c95f01663f2e680c60f4ebd7afbda953a7f229017ed6ac59bd972f5fd63a8053e82fb31ac43872e448531476b58b4781478f1e2d3bfa30de2ebc1dcb7c206806400800a424d68ab05688d13396b007c4337dfaf40668db3f2d224fbfa2bbb1c705cd21c15ebc78513d88d5e5cb9757827bf7eed57e18ea97343a7e0b172e2c7b711f3f7e5c04f0d53ab14b2c36fd646c8a7e590ba01fc9b469d36ad41612600863dac6dad34d98b511e8809b32654ac5ca8738f1370e92814c4b944082a41d5c4002049d31d24d98b551916c9120460aa04b8bc53ef1fa8d03994e0041c3aa20da45e20049fb2832cc769301c5ce1b830da69d107d628fe5fb47acaea2bb160838ac486094dc65344a683f76fdfca3638b61713e7ffe5c4f0a16970c037c20d38200243066c20a3da681700a7a5db27ec0f9137b29d2dc9b483c63fc3296c3808f71412790e4efdfbfaf0480ea653a493f7dfa34668af8034c8c9977018f19a4b331f022b20d53be7e3123a1f72de601dab76f5f856467ed7102117a3e870f1faed6d2c7d7ae5dab585a8c6819f1f8a5a0f8f71b07820e4b1c015eb46851d3db4f9f3e6d2e23bb48779ea29d0e01f4d5ab5755dcdcb9736bccfd884d7c12b33b8edb1e1cc21e461ca9a08a30e649e06ec2ee7e8acac5c33076a3679f796276c709a306ffd1f46b1720e2f7822f123f439949943eb48f19c79de3cdd1f2676fdf919bf30b38f761c68c19752f7299f93c79f2a4f97db37ffffe2224eccb1719c834b08e4e6049f3ab2c45a5070117dc8329b66c02982eaf4ac053a87d4f7c14623fdfc001d91d7f633a608e1d3b568e400390a3f48b2e1730df6a01a6203a45264ed805eaddbb77cd1b870d80b1d5db44d1e2b3f7d3d7091d3870a046f3c86f4c678323c1482ab7e7ad6114548280b3f6b00dc3fcadd9b3d542c47e0a374f3c05224021c43a22765bfedb69693972f2ad2568decf984f4158f57847fb7279f4e851250cdb6159583156ac5851fb39197abded14f38781229c1890f4b1a56f4bb3721c11c6d88913f058b34ed5c091d886653a49f81380ed651df68d1efe898f1076008b917cecdad280ceb79a2418e064ae4572f439b224964c60c2863d1d3b7a2796c4f6e9e95238fb90238f3d3afb016f4de0a1fff5fc7b17cf9d3b574e00cd9b37af7a1000b260c1824a9e1ee7088c802940cfd285a5721cfd00946efefcf9d54a01446f2ec6dbb76fabd53e7cf850ad68cfab56bcfce1b177efde84ec15d39cc3808a884b4724045600c7673fc718f05a45f21441af98c4e5ebf4b2cf5e5c36e6f689d183e59c40f6cae0d74773116da62d0452044755bb68e6f60159bd7a758d625cbd7ab5127b85294881fcd9e6c8e901166bcd9a354dfe5bb76e559ebcffbd52c5f7b06db70b2731ec353dadf26c48482467c4988409ba08d6e39b913d5b3fb28cf48a4ed2f81ae9ec1b3d807a9c021c7491e46d98c606651c924cc502787c411081520cd6c9f5ebd76be4e707514e09db6cd7ae5d5bfbe224b978e64e929e2da0727a6267dece594c5304a4912882b1e4c41cf3613f016bb3f5c14f0c7604987e6cf167672f6d902f207bfceccb6b9f04f848262a6494a44680399be788d3bbf46de00160941c68366999ca3afa11400161d462fc8cc123375df2269771240bc03c844e11468e396eaf3e3a81bb92f73cfb070f1e34c5ae5cb9f23753fbf1770181133f71ade1b0c630a63d29c6d8b4877e7271b043387922698f2e73d917cc633fc76d0fc89061ddf60f10a722be3d239fe4a78b1d7f52173155399e528e3aaa3847e4bf428edc6f10ecdcb871a3e78b80dfddbb772b99cb049c18ebd7afaf44fcf373d3eb8d5cbe7cb9212385fa4e00dcbf7ef900eacb85b44fa614a31fcd2b2f0a8138b6abcb0511389722a7e05b3373c99c547ce9e9480086f580619376103facc3606e8f6f6218278cbed04775ffd4df7f698d13274e14b8a54b9796b1af52ce4b962c2980ecd6ad5b577b376fde2cdd9c39736a2d99fb60e4b36ad5aad2631ad0bc2229fd831d09fe6289bd384eede1c38755f0a14387ca5f71f21a475c2e02388547858e59722363c1ed918c99b35fb66c59edf9b87dfb769320ca1092b5914e21390d6b38dc2d6d283fa16bfb375f2eb53bfa613355030c2c5029c8da65690bfbae48d4d60387f9b604a43d7371435e70b06f9354eb51a33fde5f097efaf4e9cae13480f5635d022e820a168625c44cc0659f0dbd7d71efdfbf5ffeec146574e9bcbd9e3d7b5636743b77eeacdce274e577ca3abb8e4d60978db36019cda377126c25367aec2b8e3fc0fc149e359bf0a518eb483fa0d933fef6876d7bc33c8c477fe1c2854c9b6f2fec00988200d156de38fc01268000ecb73a71028ae0b775ebd6d2f9e06f6f10f0814c27401371742220304085a92401003060720f9c063db1d78ea920be5d49dcae3eebbea025e1989e960cd06ddbb6c5af77e9d2a56263f1e2c505264c7a5df94a071a287f0cf33757803880cab161c3869a9f3a75aa4644b0933b767cbbf2fb75eeec724cefb94c6120ec18a3d7cf1ee02536629c88c3d7b7231f4ff6e8cd03942d7f927cb5687d343dad0f0114d0970ba6b0e49db963c78ed29f3f7fbef4828559400916dba0b12616497b64044c5c22cfa64d9b1a5b27088bbb829083070f16f876014d7be4f686a930ecb8933ca004480b85352c9200e3d7158cc61e3073b1129fbd7640005dfe4e6defb36940b703a4aacd9b37b3e9e93947a657255318b6e2633e8cb0e76bcc1cc8e3c78f57b17e2e6cd9b2a50a719ffaf5b33c4db600a5c47218a3078a2e7f802a404089e9d3837c07097bb1c404dec8572e7b6da1f3b47165bf011d8551206022991b1d31c0821981188b91f867cca565df26c53a45c436315368f4c6a63dda15eddebdbb6c38785c16fb002b287a89041f96697114c9cf639efe35575464cf9e3d99fe414a5fa61beb5f935ca0240ccb12632cac74fdba6bfe4e8b0f5fe272a70d14358c34a001e93e02d06112b0047719cd8df68715c507b4d3121378a375e22bae1f96e469da238af6c851309240d692db93d083a1b0ed9ddb962b57aed4b13b7aa010c0df1ccbde482145ace46bc7e8ce1ba6bb1bd6091046f2351c6632b62f6a9b797360d9798f031a6046f1bccfede7552a6f3b8675579a6fc4ee467b8d65e2575ee646c90262fbf6edcd919e3c79b2ecd8ecdab5ab8acf2f4444f0733ae69e8d1b3756fcecd562c0c740a6bb7e6903cc4a0c94446d96ac73a1cc235a80de48b0995689cd780cc76e604fc72863fe72f1af845c46af47e0c64a187d4ec8b75f4e494fb7a55d645bdf9d0fc57412a73ff5215d5a23fbdde0fdd600b3c732ff5c6ab6c3c619aaa7876160bc84ff8f1821e17fa72c051d9daa725f0000000049454e44ae426082",
             /*sad*/ "89504e470d0a1a0a0000000d494844520000002d0000003b0806000000ef95031c000000017352474200aece1ce900000044655849664d4d002a00000008000187690004000000010000001a000000000003a00100030000000100010000a0020004000000010000002da0030004000000010000003b00000000a908677200000a86494441546805add8c98b54491006f06a6df75d410f8a9e44c5053c88e27e105c512fe2ffe8c50517100f8a200a8a2b2a08a222e28a8afb3ad3bf1cbf37d96faaabab6102b2223332962f2223dfabaa81bf86a8d3278d1b37ae437d6060a0e1bf7fffeed3fa1f35b6b1e78ffd18201427e3c6147148594094c06531860f40117b80e36f0c2e3a83fd28736c5cbc78b1a89bcf9831a3337efcf84e408c56f1c1c1c1ceaf5fbf3af7eeddeb7cfefcb93361c284cefbf7ef0b703ef8b4df0ff555690e5180a5457efcf8d1f7d102c44f009b1b12476369919e950ed83367ce94ca58a7b2af5ebdea7cfbf6ad73f6ecd91250e552a924074c6cecfffcf9b3f3eeddbb923cdd69d3a651191360faa382560115fdfefd7b67d2a4496c0a013f7dfaf4ce9b376fca3a8093e81fb5c2f83872e4489394ea6a174382478f1e2d7ae4a9789d78edcbbc27680a407000a420d692b096086e8c44f40131a64c99d200adedd322e2744bbaed7b54d00ce2ecf5ebd7a5075575c9922525c0c3870fcb7e2ad42d6864ece6cd9b57f4f97df6ec5929005bad13bdf8a2d38d462ed11f6d0ef4239a3c7972e1da42001552316d636db403668d031d7013274e2cbef2c14fecf15ed4b3d202c511276907171001418687da01b3c625495711f848026469b1e8c75f37deb3d271c069aaca8976113840d23e924c65dbc180a2e7894147a59d10797c8f64fb1f5f6d417bcd1170aa22002eb8cb880b683f7addec23a3abc2fc7cfdfab58c24cc2fea0778cf4a730210c72a93aa90ab34104e41af0bd60d387b642f499a7b12f187c72ebc18f4f81815741c09fef1e3c7120050bd4c26e8972f5f460c117b80119e791bf0884e5a1b3d2f22dd54caeb576504f4bc557980f6eddb575cd2b3369c40889ccde1c3874b6be9e31b376e145f5a0c6919fed825a1d877e33d41a74a0c019e3f7f7ed3db2f5ebc682e23bd507b9ea49d0e02f4eddbb725b959b366159efb119dd8c4679b8fda1e0c523d1571a49c4a02cf88e376c0f67e92cac55361d58d9c7ee6f1d9e603430aff96e9cf2e40c8f7052f125f43a909943eb4af328e3bc79ba3654fdfbe2337671770eec3d4a953cbbdc86566f3fcf9f3e6fbcdfefdfb4b41527df1423d2b0daca3e358d07c2b4b52e941c03937548a2e9d0026cba312f0246adf888d44ece70d1c906d3eacd20173ecd8b162083400394adfe87201f3560b30099149327e525da03e7cf8d03c71e800185dbd8d24cd3f7d5f7d9dd08103070a370f0dab743618221549e6f63c35704e0508386b836e2accde9a3e5d2d84ec2771f3f893a00248045987f8aee9df9d4aca9091b716a7793eabbc80ebd6ad6bb4af5ebd5a5e2e4f9f3e2d0153ed5499221f4b972e2dfb80ad5ab5aab1bf72e54af3c340124e0c48a79b5324afa901ed384294552799030fcca64d9ba2d2f0e8a6ca3604612f38c0f6ac91794debd7af2fcb53a74e95e463c707df39c1daa649216f3541f26dce5c8be8ab3d7bf6d476657eeddab5e2d8220025581f7502db27778ab76fdffe8fafbd7bf7963d31e902afdad64812e47fc63f77f1dcb973c5482566cf9e5d7a10005403f63663080c87f4713d4b26507d9c8092cd9933a7bcee0388dc7ce5ca9525868ff3e7cf9756b4e751cb5f7e78482a542acd5805f00474e99080a1fbf7ef977d7d9d63e458eb009e24f8914cfcd2717ad9a7cf6fbb55e8197c1b59277e78d3d3710c742e134359fbafc23c5f9256ac5851007172fdfaf5a2ef11c6563bb1a76bae18e400f3555fc23b77ee748c90cb2c51832e5b76d628f3a6a753511b0222c11990a1641e2764aa1edb70fa747dc9c2c9259da0ec4264f6710350c329e474a29bb84da5558330060926630e0c2f0894e0b8aaa39b376f16cece17a29c926af3bb7af5eab2cf4f82f367eefb38395d40c534a2675ec72c952608481c4982b2e0c85ce553fd382c9bd5073b3ee82160f80fc50ea7672f6d9017903d76f6c5b58f027c301319524a501c60c6e639e2f42e7900701800b8e040d349cbd04101649e64b4183b3c78c4264bdcc4c207b300cc406492c019e6b8e7ce9d5b64095694ff7ce4394ffff1e3c74db2cb962dabd59ae408bdfd80e35f2c7eade1b056619536920cdeb4877e72715407313242698f76e5b2cf99613fc76d4f122986756d1f204e857f7b389bc4278b1e7b542e62b2723c45386428e31c917f851cb9ef20aa73ebd6adcea74f9f8ae3070f1e94602e13707cac5dbbb6a95abe6ee6d176f9f2e5a61849d43b01707ffd8a09a8970b9200bd9a9a475e841418d6d9e582709c4b9153f0d6cc5c3027155b72324466a4ea014327edc07faa0e83b93d76f1810f0c7d471e92fd557effa5354e9c3851c02d5ab4a8287b95325eb8706101486fcd9a3565cff7088167ce9c59d682b90f389be5cb9717b94a039a4724a1979622f8c5127d7e9cda93274f4ac2870e1d2af662888b0fba5c08700243868e59709c32e7f65078e6f4172f5e5cf67cdcbd7bb70910610a92354e26919c86351cee9636141f91d5f6cdcba5ec0e7dd84cd600030b5412b276596aa2df26816a39702a5f5340da33e737c50b0efa7591ca7a486978970f49e3fcf4e9d3743a4e0358ffe20bc08453ce5261015526e0b24f87dc3ebf8f1e3d2af6f42485bb749e5e2f5fbe2c3a643b77ee2cb1f969d3f092b5761d1bc72e1b63cec2cd2377127405c60dfb92630f303b89674d27f5928c75a81bd0ece1c37ed8d61be6a978e4172e5cc8b4797ba90e804908106de589c31e600408c0beab23272009765bb76e2d321fecedf502deb3d271d0781c9a70080c50a9548200001830b9074e831cd9ab7d4a886d9be2b72dcfba2b684118a6a7050374dbb66db1eb5cba74a95463c18205054c2ae971e5950e34507e0cb33797003f808ab161c38632f7fb904c21e8891d3db66d1a7e9d5bbb0cd37b2e532a90eae091eb67037881711547fcb0f5766463648fdc3c40e9b247895716d547d3d3fa10400ebd5c544a953c3377ecd851e4e7877ec3917396ca028a54b106ad6a7ca1b4473860fc22fefcca8fae1384c55d519083070f967875024d7be4f6a652a9b0e38ec380e2202d644fa554110518bb36d18b3e60e67cc53f7deda00064f99d5aefd36940d70e92d5e6cd9be974f49c23d3ab82494cb56263de0fd1678b670ee4f1e3c74bb2be2e6cd9b2a524e23e75eb67719a68014aa8caa9183950645ead48021c0a4c9e1e2c9b3d3ee8f3c527f0385bb1ecd54466d4b8b2df808e00e7089850e6b8230698331c88912a12fbf05c5afa7551ac934474e33389468e37ed5167b47bf7eea2c3c0c8e5035842910bc479bf95e64792ec0cf3f4afb9a442f51f4449207b5d2b9dcdf05ca0044c950556b1b6d3d8b5397ba7c5862d72b9d30692ea871ad080b40707642a09589cbb8ce6b8fd7e49f201edb4f8041eb78e7fc975c392384d7b445073869ca138b216dc9e80860aa5daed7f56fd95ebd80da01480bdb92a7b22a5287c255e8da33d6f2adddeb08e835424afe15426bcbea875e5cd81a5e7390e6880e1fc799edbcfa354dcda87759b9a37627ba35eab32f22d2f735cb080d8be7d7b73a4274f9e2c7a7476edda5592cf37448560e774cc8d8d1b3716ffd92b8b1e1f3d2bddb64b1ba8acc040095457c93a17ca3ca405c871a49a6995e88c56e1e8f5ece92885e7978bbf1272193d1e811b2960e439216fbf9c929eaea94eb296b7e77d553a81d39ffa902cad91fdb6f36e6b80e9ab32fb5c6abafdfae9aba7fba9c06801ff0f1f29c2dfe758e13a9690515e0000000049454e44ae426082",
             /*angry*/ "89504e470d0a1a0a0000000d494844520000002d0000003b0806000000ef95031c000000017352474200aece1ce900000044655849664d4d002a00000008000187690004000000010000001a000000000003a00100030000000100010000a0020004000000010000002da0030004000000010000003b00000000a908677200000a90494441546805add9c78b54dd1605f052db1c51d081a22351318388980782111141fc1f9d1830a03850145174607620888a8811730edfebdff97add77fabeb2ba84b7e1d4493bacbdce3ef756758ffa67503a7dcae8d1a33bd4478d1ad5f4bf7fffeed3fa5f35b6b1e78ffd5f40284e46ff55c4416501490297c95f7c004ad8031c7f7fe1a233d08f32c7da850b178abaf1d4a9533b63c68ce904c4488c0f0c0c747efdfad5b977ef5ee7f3e7cf9db163c776debd7b5780f3c1a7fd7ea42fa63924019612f9f1e347df470b103f016cac499cfc4d89f4643a604f9d3a5598310fb32f5fbeec7cfbf6ad73e6cc99121073612ac901131bfb3f7ffeecbc7dfbb6244f77f2e4c954fe0a30fd11416300a3dfbf7fef8c1f3f9e4d11e0a74c99d279fdfa75990770121d522b1d1f870e1d6a92c2ae72d12478f8f0e1a2673d8cd789d7be8c7b82a6000407400a622e097389e8b53f097d40b489132736406bfb948838dd926efb1e113483387bf5ea55a941ac2e58b0a00478f0e041d90f43dd82668dddac59b38a3ebf4f9f3e2d04b0553ad18b2f3adde4cf140d6973a01ec98409134aaf2c04c010c6948db9d60e98b91ee8801b376e5cf1950f7e62afef253d9916288e384939b88004086bfa483b60e67a49d245021f49c05a4a2cfaf1d7adefc9741c701a5639512e020748ca479261b61d0c287a9e187430ed84acc7f79f6cffc7577ba13de70838ac08a017dc65d40b683f7addecb34617c3fc7cfdfab5b424cc2fe907784fa639018863cc8415eb9806c229a875c1ba01674fec2549634f22fef4b14b5f0c7a7c8c083a8e04fff8f1630900a85ab626e8972f5ffe1822f600137dc66dc07f74d2dae87911e98629af5fcc08e8798b7980f6ecd9535cd233d79c40c43a9b83070f96d252c7d7af5f2fbe94185132fcb14b42b1efd6f7041d9618023c7bf6eca6b69f3f7fde5c467a91f638493b1d02e89b376f4a72d3a74f2f7dee477462139fed7ec4f26010f630e2483995843e2d8edb01dbfb492a170fc3d8cd3afd8ce3b3dd8f1a54f82f4d43bb0011df17bc487c0da52650ead03e661c778e3747cb9ebe7d476ecc2ee0dc87499326957b91cbcce6d9b367cdf79bbd7bf71642c2be78919e4c03ebe8381634dfca92546a1070ce354cd1a513c0d6f2a8043c89dad7622311fb79030764bb1f56d30173e4c8916208a4bacb51aae35cc0bcd5028caeb5d4a7406117284f9e3c71e800b863c78e06cfc58b170b29fcd33f76ec583921989c94161906da068300c38800c0ac5bb72e369d93274f165693241b0d4b6118eb2907bd12a2637ffffefd8daf0c2448c413dfdc98b0ab6518e86c5066e4ad25112cd5b26bd7ae32bd73e74e79467bb93c79f2a44930f6c0123e162e5c58f657ae5c59d6ea8fd3a74f97278a849c18904e37a7187262d3d4b45f2211ca988a11f0d86dcbd2a54b3b6bd6ac29ba61998e20ec09c0f6ccdb80af5ebddab976ed5af33ac7303d80f9103f27589c0d7d34a0f3561344ed313256223114406b0b3074e84bd0290988f1045ebe7cf930b31b376e14fd909352e483af803727f0581f6aff3ef5ce9e3d5b826065c68c19a50601203367ce2cc139b6cf109865cb9695fd7c48282c656deddab51936bd37a2c4f801eafdfbf7e5de7cfaf4a994a23d8f5a31f2c363f7eedd8d7d619a3156f432225ed504086039707cf6738cb76fdf2e3af9502a494adf0d30865d6c7ee918f34df41a967302d94b0c7d73116da62cf2e862286b17cd388fac254b96940439c0daaa55ab0c8b60883ddd5a248894fa74ac212bcf7f3f92e968e2da4bb9f0957153d332cf46020ace41ea2a4c588b601d7bb5d0af19b22fe9046deb8a6d4f0354730a70588b246ec3740a3d06827226630eb40f1f3e14fb04d7639d609cb0f38508c84b972e959793712e223f09ce9fb193b4ae0c0115538b9e711db3306d2120c39024280b488c311ff6e3b06c561fecf8a04780e13f123b3d3d7b29032f20628f9d7d71ed93001fc840869412540f306363ac9b7bfd9a5b0f000e03402f38d074527674480019271925c64e1f3c62594bdcc4d20f64028846ac4942cf30c7edd1672dc18af2d0479ef3f41f3d7ad424bb68d1a25aad49cea20b081cfff16b0e87398631ad25197d531eeac9af13ec10465a24e5d1662efb9c69f673dcf6241132cc6bfb00712afcdbd3b3497c6bd1634fca454c568ea72c0e1aca3847e4af428edc7710ecdcbc79b3e345c0eefefdfb2598cb041c1fab57af2e81d8e7eb669ee9972f5f6ec848a2de0980fbd32f1b403d3a8904e8d5d23cf2b24881619d5d2e08c7b91439056fcd8c057352b1b56e8d58d3c27ac0d04939f01fd66130b6c72e3ef4a3061fe8836bff94df7f290ddf65819b376f5e51f62a653c77eedc0290de8a152bcadead5bb7cadab469d3ca5c30f741cf66f1e2c5651dd380e61169d11fd8c5f18b25fafc38b5c78f1f97840f1c3850ec2527ae7ec0e522805bd064e89805d753e6dc1e499f31fdf9f3e7973d1f77efde6d0264318464aeb726919c86391cee9632149f58abed9b974bd91dfcb099ac010616a82464eeb2d442bf2d02d5ebc061be9680b467cc6fc80b0efa3549653ea834bcca0757e33cdfa19d06b0fe8a2f00134e390bc3026226e0b24fc7ba7d7e1f3e7c58ece9494aefd2797abd78f1a2e858dbbe7d3b7cc3182e0b831fc329cbea50efd83876d980e02cbd71d69d045d81f59a7dc9b107989dc433a713be24631ea1db4bbafe092106613cf3f3e7cf67d8bcbdb003601202445979e2b007980002b0efeac4094882dde6cd9bcb9a0ff6f67a01efc9741c341e07071c020354984a1000000326f7c0695827f66a9f1262db96f86daf67de15b4200c53d38201ba65cb96d8956f70d89833674e0113263daebcd28106cadf4ed81b4b801f40c5f00bdff8c48913a547043db1a3c7b62dc3af736b97616acf650a0361479f75f5ac012fb01ee3841fb6de8e6cb4ec59370e50baec49e29549f5d1d4b43a0490432f174c61c93373dbb66d65fddcb973659db3300b28c1620d1a6b7c9194477ac0f825e26cd8b0a1d1f51d1c16770521fbf6ed2be0eb049af2c8ed0d5361d8712778407190120a6b582401c6ae2d188d3e60c67cc53f7de580006bf99d5aefd36940d70e92d5c68d1be9949a73646a553089612b36c6fd087db6fa8c813c7af46849d6d7854d9b369544f257ac6e7e9b68014a09cb61cc3a50d6f203540282096c3d35d82d40bd469f2f3e81d7b315cb5e2dd6b41a57f61bd059d073044c2463bd230698333d10fa7e2497967e4d8a7992889ff84ca259d737e55167b473e7cea2c3407359ec032ca1ac0bc479bf4cf32349769a71ead7585291fcbdd03c0964af2bd3d94c9f0b94806159608cb59dc6aeddb3775a6cd812973b6520a97ea4010d48bb71600d9380c5b9cb68acb7dfaf483ea09d169fc0ebcde35f72ddb0244e531e59a87b869c91383217dc9e801a86c2b6676e2d57ae5c29c7eee88142007b632c7b228514be12aff6d11e374cb737cce3208ce4351c66d2d717b566de18587a9ee38006989e3fcf73fb79948a5bfb306f4bf3466c6fd4732c13dff232d60b16105bb76e6d8ef4f8f1e3458f8e7f51483edf108dd9391d636dfdfaf5c57ff6caa4c7474fa6db762903cc0a0c9440354be6b950c61125605d4fb0995289ce480c47af674d47297d7eb9f853422ea3c723707f0a98f59c90b75f4e494dd7522759afb7c77d319dc0a94f75682da591fdb6f36e7380e963997d2e35dd7efdf455d3fd303052c0ff878f90f01f48a7cd66847c60d60000000049454e44ae426082",
@@ -46,26 +46,78 @@ class LabubuGenerator {
     }
 
     /**
-     * Load image from hex string
+     * Load image from hex string or create a test image
      * @param {string} hexString - PNG hex string
      * @returns {Promise<HTMLImageElement>} - Loaded image
      */
     async loadImageFromHex(hexString) {
         return new Promise((resolve, reject) => {
-            const bytes = this.hexToBytes(hexString);
-            const blob = new Blob([bytes], { type: 'image/png' });
-            const url = URL.createObjectURL(blob);
+            // If hex string is empty or invalid, create a test image
+            if (!hexString || hexString.length < 100) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 200;
+                const ctx = canvas.getContext('2d');
+                
+                // Create a simple test labubu shape
+                ctx.fillStyle = '#ff6b9d';
+                ctx.fillRect(0, 0, 200, 200);
+                
+                // Draw a simple face
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(50, 50, 100, 100);
+                
+                // Eyes
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(70, 80, 20, 20);
+                ctx.fillRect(110, 80, 20, 20);
+                
+                // Nose
+                ctx.fillStyle = '#ff4757';
+                ctx.fillRect(95, 110, 10, 10);
+                
+                // Mouth/teeth
+                ctx.fillStyle = '#ffffff';
+                for (let i = 0; i < 8; i++) {
+                    ctx.fillRect(75 + i * 6, 130, 4, 8);
+                }
+                
+                // Convert canvas to blob and create image
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const img = new Image();
+                    img.onload = () => {
+                        URL.revokeObjectURL(url);
+                        resolve(img);
+                    };
+                    img.onerror = () => {
+                        URL.revokeObjectURL(url);
+                        reject(new Error('Failed to create test image'));
+                    };
+                    img.src = url;
+                }, 'image/png');
+                return;
+            }
             
-            const img = new Image();
-            img.onload = () => {
-                URL.revokeObjectURL(url);
-                resolve(img);
-            };
-            img.onerror = () => {
-                URL.revokeObjectURL(url);
-                reject(new Error('Failed to load image from hex'));
-            };
-            img.src = url;
+            // Try to load from hex string
+            try {
+                const bytes = this.hexToBytes(hexString);
+                const blob = new Blob([bytes], { type: 'image/png' });
+                const url = URL.createObjectURL(blob);
+                
+                const img = new Image();
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    resolve(img);
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    reject(new Error('Failed to load image from hex'));
+                };
+                img.src = url;
+            } catch (error) {
+                reject(new Error('Invalid hex string'));
+            }
         });
     }
 
@@ -206,20 +258,20 @@ class LabubuGenerator {
     }
 
     /**
-     * Main labubu generation function
+     * Main labitbu generation function
      * @param {number} seed - Seed for random generation
-     * @returns {Promise<HTMLCanvasElement>} - Generated labubu image
+     * @returns {Promise<Object>} - Generated labitbu image and hex data
      */
-    async labubuMaker(seed) {
+    async labitbuMaker(seed) {
         // Create seeded random number generator
         const rng = this.createSeededRng(seed);
         
-        // Choose random base labubu
-        const baseIdx = this.randomInt(rng, 0, this.labubus.length);
-        const baseHex = this.labubus[baseIdx];
+        // Choose random base labitbu
+        const baseIdx = this.randomInt(rng, 0, this.labitbus.length);
+        const baseHex = this.labitbus[baseIdx];
         
         if (!baseHex) {
-            throw new Error('Base labubu hex string is empty');
+            throw new Error('Base labitbu hex string is empty');
         }
         
         // Load base image
@@ -294,7 +346,14 @@ class LabubuGenerator {
             }
         }
         
-        return finalCanvas;
+        // Convert canvas to hex string for storage
+        const pngBytes = await this.canvasToPngBytes(finalCanvas);
+        const hexString = this.bytesToHex(pngBytes);
+        
+        return {
+            canvas: finalCanvas,
+            hex: hexString
+        };
     }
 
     /**
@@ -316,21 +375,21 @@ class LabubuGenerator {
     }
 
     /**
-     * Generate labubu and return PNG bytes
+     * Generate labitbu and return PNG bytes
      * @param {number} seed - Seed for random generation
      * @returns {Promise<Uint8Array>} - PNG bytes
      */
-    async generateLabubuBytes(seed) {
-        const canvas = await this.labubuMaker(seed);
-        return await this.canvasToPngBytes(canvas);
+    async generateLabitbuBytes(seed) {
+        const result = await this.labitbuMaker(seed);
+        return await this.canvasToPngBytes(result.canvas);
     }
 
     /**
-     * Set labubu base images
-     * @param {Array<string>} labubus - Array of hex strings
+     * Set labitbu base images
+     * @param {Array<string>} labitbus - Array of hex strings
      */
-    setLabubus(labubus) {
-        this.labubus = labubus;
+    setLabitbus(labitbus) {
+        this.labitbus = labitbus;
     }
 
     /**
@@ -342,11 +401,11 @@ class LabubuGenerator {
     }
 
     /**
-     * Download generated labubu
+     * Download generated labitbu
      * @param {HTMLCanvasElement} canvas - Canvas to download
      * @param {string} filename - Filename for download
      */
-    downloadLabubu(canvas, filename = 'labubu.png') {
+    downloadLabitbu(canvas, filename = 'labitbu.png') {
         const link = document.createElement('a');
         link.download = filename;
         link.href = canvas.toDataURL('image/png');
@@ -358,16 +417,16 @@ class LabubuGenerator {
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = LabubuGenerator;
+    module.exports = LabitbuGenerator;
 } else if (typeof window !== 'undefined') {
-    window.LabubuGenerator = LabubuGenerator;
+    window.LabitbuGenerator = LabitbuGenerator;
 }
 
 // Example usage:
-// const generator = new LabubuGenerator();
+// const generator = new LabitbuGenerator();
 // 
 // // Set your hex strings here
-// generator.setLabubus([
+// generator.setLabitbus([
 //     "normal_hex_string_here",
 //     "sad_hex_string_here", 
 //     "angry_hex_string_here",
@@ -379,6 +438,6 @@ if (typeof module !== 'undefined' && module.exports) {
 //     "silly_hex_string_here"
 // ]);
 // 
-// // Generate labubu
-// const canvas = await generator.labubuMaker(12345);
-// generator.downloadLabubu(canvas, 'my-labubu.png'); 
+// // Generate labitbu
+// const canvas = await generator.labitbuMaker(12345);
+// generator.downloadLabitbu(canvas, 'my-labitbu.png'); 
