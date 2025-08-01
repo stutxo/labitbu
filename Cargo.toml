@@ -26,6 +26,9 @@ hex = "0.4.3"
 rand = { version = "0.8", features = ["small_rng"] }
 getrandom = { version = "0.2", features = ["js"] }
 
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
 [lib]
 crate-type = ["cdylib"]
 

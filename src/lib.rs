@@ -360,3 +360,54 @@ pub fn spend_script(pubkey: XOnlyPublicKey) -> ScriptBuf {
         .push_opcode(OP_CHECKSIG)
         .into_script()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use image::{ImageBuffer, Rgba};
+    use rand::{rngs::SmallRng, RngCore, SeedableRng};
+    use wasm_bindgen_test::*;
+
+    fn dummy_webp(target_len: usize) -> Vec<u8> {
+        let mut side = 64u32;
+        loop {
+            let img =
+                ImageBuffer::<Rgba<u8>, _>::from_pixel(side, side, Rgba([255, 255, 255, 255]));
+            let mut buf = std::io::Cursor::new(Vec::new());
+            img.write_to(&mut buf, image::ImageOutputFormat::WebP)
+                .unwrap();
+            let bytes = buf.into_inner();
+            if bytes.len() >= target_len {
+                return bytes;
+            }
+            side *= 2;
+        }
+    }
+
+    const MAX_BASE_LEN: usize = 1_886; // longest “labitbu” (angry)
+    const MAX_ACC_LEN: usize = 1_142; // longest accessory (pinkGlasses)
+
+    #[wasm_bindgen_test]
+    fn generated_images_are_always_under_4096() {
+        let base_images = vec![dummy_webp(MAX_BASE_LEN)];
+        let accessories = vec![dummy_webp(MAX_ACC_LEN)];
+
+        let base_js = serde_wasm_bindgen::to_value(&base_images).unwrap();
+        let acc_js = serde_wasm_bindgen::to_value(&accessories).unwrap();
+
+        let mut rng = SmallRng::seed_from_u64(0);
+
+        for _ in 0..10_00 {
+            let pubkey_hex = loop {
+                let mut bytes = [0u8; 32];
+                rng.fill_bytes(&mut bytes);
+                if XOnlyPublicKey::from_slice(&bytes).is_ok() {
+                    break hex::encode(bytes);
+                }
+            };
+
+            generate_labitbu_bytes(&pubkey_hex, base_js.clone(), acc_js.clone())
+                .expect("image exceeded 4096-byte cap");
+        }
+    }
+}

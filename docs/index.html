@@ -7,7 +7,7 @@
   <title>labitbu.com 👹</title>
 
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.4; }
+    body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.4; color-scheme: light; background:#fff !important;}
     #labitbu-container { max-width: 720px; margin: 40px auto; padding: 0 1rem; }
     button {
       background-color: #007bff;
@@ -58,7 +58,7 @@
     <p style="text-align:center;color:#333;" id="deposit-address"></p>
 
     <p id="deposit-area" style="text-align:center;margin-top:2rem;">
-      <button id="deposit-btn" disabled>Deposit 5&nbsp;000 sats</button>
+      <button id="deposit-btn" disabled>Deposit 10,000 sats</button>
     </p>
 
     <div id="destination-section" style="display:none;text-align:center;margin-bottom:2rem;">
@@ -212,7 +212,7 @@
         let utxos = await addresses.getAddressTxsUtxo({ address: generatedDepositAddress });
         if (!utxos.length) {
           const send = await request('sendTransfer', {
-            recipients:[{ address: generatedDepositAddress, amount:5000, memo:'Labitbu mint' }]
+            recipients:[{ address: generatedDepositAddress, amount:10000, memo:'Labitbu mint' }]
           });
           if (send.status !== 'success') throw new Error(send.error?.message || 'sendTransfer failed');
         }
