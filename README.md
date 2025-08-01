@@ -2,7 +2,7 @@
 
 This is a fun project inspired by our plebfi 2025 second place hackathon project! @jarolrod @luisschwab @PlumBuggle68 
 
-original here 
+original hackathon project here
 
 https://github.com/luisschwab/labubu-assets
 
@@ -31,6 +31,14 @@ https://mempool.space/tx/3a779d02f3487eaad0af54747f3acfcbc43dfa001256d2ee2ba6faf
 ```
 echo ‘<controlblock>‘ | tr -d '[:space:]' | grep -o -i -m1 '52494646[0-9a-f]*57454250[0-9a-f]*' | cut -c1-8192 | xxd -r -p > control.webp && open control.webp
 ```
+
+## Labitbu explorer (bitcoin core)
+cli getrawtransaction "txid" 2 "blockhash" \
+| jq -r '.vin[0].txinwitness[2]' \
+| tr -d '[:space:]' \
+| grep -o -i -m1 '52494646[0-9a-f]*57454250[0-9a-f]*' \
+| cut -c1-8192 \
+| xxd -r -p > labitbu.webp && open labitbu.webp
 
 ## Setup
 
