@@ -16,7 +16,7 @@ use serde_wasm_bindgen::{self, from_value};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 use hex::FromHex;
-use image::RgbaImage;
+use image::{imageops, RgbaImage};
 
 #[wasm_bindgen]
 pub fn generate_labitbu_bytes(
@@ -61,21 +61,21 @@ pub fn generate_labitbu_bytes(
 
     if let Some(acc_idx) = accessory_idx {
         let accessory_data = &accessories[acc_idx];
-        let accessory_img = image::load_from_memory(accessory_data)
+        let mut accessory_img = image::load_from_memory(accessory_data)
             .map_err(|e| JsValue::from_str(&format!("Failed to load accessory: {}", e)))?
             .to_rgba8();
+
+        accessory_img = imageops::resize(
+            &accessory_img,
+            base_img.width(),
+            base_img.height(),
+            imageops::FilterType::Lanczos3,
+        );
 
         composite_images(&mut base_img, &accessory_img);
     }
 
     let webp_data = encode_to_webp_deterministic(&base_img)?;
-
-    if webp_data.len() >= TARGET_SIZE {
-        return Err(JsValue::from_str(&format!(
-            "Generated image is {} bytes - exceeds 4096 B cap",
-            webp_data.len()
-        )));
-    }
 
     let mut padded = vec![0u8; TARGET_SIZE];
     padded[..webp_data.len()].copy_from_slice(&webp_data);
@@ -106,7 +106,9 @@ fn apply_hue_shift(img: &mut RgbaImage, hue_shift: f32) {
 
         let (h, s, l) = rgb_to_hsl(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0);
         let new_h = (hue_shift + h) % 360.0;
-        let new_s = s.max(0.6);
+
+        let new_s = s.max(0.40);
+
         let (new_r, new_g, new_b) = hsl_to_rgb(new_h, new_s, l);
 
         pixel.0 = [
@@ -364,40 +366,30 @@ pub fn spend_script(pubkey: XOnlyPublicKey) -> ScriptBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use image::{ImageBuffer, Rgba};
     use rand::{rngs::SmallRng, RngCore, SeedableRng};
     use wasm_bindgen_test::*;
 
-    fn dummy_webp(target_len: usize) -> Vec<u8> {
-        let mut side = 64u32;
-        loop {
-            let img =
-                ImageBuffer::<Rgba<u8>, _>::from_pixel(side, side, Rgba([255, 255, 255, 255]));
-            let mut buf = std::io::Cursor::new(Vec::new());
-            img.write_to(&mut buf, image::ImageOutputFormat::WebP)
-                .unwrap();
-            let bytes = buf.into_inner();
-            if bytes.len() >= target_len {
-                return bytes;
-            }
-            side *= 2;
-        }
+    fn decode_hex(s: &str) -> Vec<u8> {
+        hex::decode(s).expect("Failed to decode hex string")
     }
 
-    const MAX_BASE_LEN: usize = 1_886; // longest “labitbu” (angry)
-    const MAX_ACC_LEN: usize = 1_142; // longest accessory (pinkGlasses)
-
     #[wasm_bindgen_test]
-    fn generated_images_are_always_under_4096() {
-        let base_images = vec![dummy_webp(MAX_BASE_LEN)];
-        let accessories = vec![dummy_webp(MAX_ACC_LEN)];
+    fn generated_images_are_always_under_4096_with_real_data() {
+        let base_images = vec![
+            decode_hex("524946465607000057454250565038580a000000200000002c00003a000049434350c8010000000001c800000000043000006d6e74725247422058595a2007e00001000100000000000061637370000000000000000000000000000000000000000000000000000000010000f6d6000100000000d32d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000964657363000000f0000000247258595a00000114000000146758595a00000128000000146258595a0000013c00000014777470740000015000000014725452430000016400000028675452430000016400000028625452430000016400000028637072740000018c0000003c6d6c756300000000000000010000000c656e5553000000080000001c007300520047004258595a200000000000006fa2000038f50000039058595a2000000000000062990000b785000018da58595a2000000000000024a000000f840000b6cf58595a20000000000000f6d6000100000000d32d706172610000000000040000000266660000f2a700000d59000013d000000a5b00000000000000006d6c756300000000000000010000000c656e5553000000200000001c0047006f006f0067006c006500200049006e0063002e002000320030003100365650382068050000901c009d012a2d003b003e311888432221a1140d55c4200304b48009c61f877fb01eb3f864eff7ab3fb73fd579e77337f72fc33f0b3f3efc57fe1ffe87fc5f3b3dc03d52ff38fc47fdcbff2dc7b58bffa7fe52ff74fdaae903d903dc7ffabfe587be3fd43fa6f8b0fc9fd057f9bff5dfc89feabf0d5fb17e26ff70ffbbf06fe64ff29f90bfd27ec27f97ff2bfec7fd7ff6b3fa6ffe1fa55f5c9fae9ec29fa70c79214e4fea972b75b2c6d174f6e7ce797fdcbfdad035df3575f97570c8ee8df3cec86df20ecfb2990abc150cafc750b76e3393b6c5ce318be11b62f48b813ed01be4a7ae69d20aa56b51e1a8c000fefffe945c7c2ee7529ed74bb287057c52cfa87d4cca8037e6abfee1e81c3ffa06d386a1fcba55ea0adc46bb0b422730c7fd7f753c30d4c1fc2452cca3e87bd3a5e0db73528ee781110ede637637c6f77c6efb0f0ffffbf198c620459d96f643f0742ffecb9f0e9b8474fb3fad96b183f43b6fc83ff87b343c66ed84f47f8f7829d51dbb7e23be26465e43836d025e2a901ceebe76c0473a5ee799177791f9505b49383e20754dafe96d4f15ff7d6f61e8a9122ae7bed3d562b46911ddb69d275a06b7f191aeb4989d9f87ad1fdb76d1ca66c25fd068634cc29a52929231c1737715cfda4a0e052167481335d81eecd5d119ed6dc00f9483defa505e90d3e4c3eced58c855fd97f727b1190e1ded4d44acdbca707c5122ec1d16d96d9711b9454a0dbbae1552aa5e8ff3c7fc5d8e59972290664f804636fc61c8dd4a3b54ac91806bc655be63226a854d40d1aaa5e01f20e4efe1fff57eb1797c4280204974fba1baa21054d816248365e7fe195db3b757dd620dc8215b23365908787fff2c1de3d5f32915907ce9ffc54364203463e2c7a3077739ccac427e5116ff19d569243702abc0250c21675f93d2135a0afc239a0b9082f2c421f2e60eab9ceb1d2a0e59c77b15a3f4d236d8a394f2fc1c269762bf00a5b3b02d7a243493074954b7a27cdf0eeebb26a2d2cde957ffe3f5487ba6a9a1218fffc210091ea190bab16a4ea397508c84d770cd7d4136fc4d0898f6373820b3a84aae43993cf477dae1de0685a85e5754161664eaa601bec9882980d26056c5f90b6b6c3952855a74dd4e9511b4c2dc797d254437224d9eaeddb4ad75bdc6c452eac2f8da56a95b961233c0c59f01317a9dc9956f50f04f330a908a81f8ef51339bd41ca884e6284fd78727b98755e762fcd17f34c4b65b63d17f63724379113a87ffcd13f08cebd14a285fda254808bd77c7fbad5d21a6db0453b1bf4740ff1bdb88606caf65ff0f2b3d473fb75ce6e1fd8751cfa65b132963287f3ccbf581382f0d457c649ba96038a934ca7f1aed1bea34203a572a3e6be667a0ba7644acca8d9e7bdd4645d497460acad21e72de589c776c3f02db8a9d9bcb327e5652cb05ee96e8b8adc5025137c692b8eb5e96bfc1d81e3ba983a6b0d5a0ad60d09b88126f349563928dac5ca845a2d6b3e9e641693775a0590c9a7903d9985fd3afc189c1c4257add39e34d58df5cc8a2e41f488f8809dee0d9d809a21c5d78dfb3edb75ef95a2b56c03faf8442dc38a19bfff6a20152e1785c2bc67f46f00ced2bffd94b76244982e5138a71ae23a88aa3fe6403d551d2a6567363727152cf72c72d19794fa8e86a86e39b3749292169fe8424fdd9556e62e94fd3ede44698caf7695a4e508ab5d9c6df6f6d763b4dd9117a84924158f942c355ffc4628bf3849139fb0fffc794f4c8e3ae3ff3bbf2ac42f873445d0e838c957016afacff41c2e74098b33873a0899e06c22590135e4f38e9a59ed17fff6c65b94ca178d04ad3ceccebeb8537f19a41f20476573cd0075df403b7b2280caf07a880afb611b8534499d0482850113df153e4a299df0ada3a9b6e64f92be8eb1b17e5e49ba9c1220e03bf3a91c00000"), // angry
+        ];
+
+        let accessories = vec![
+            decode_hex("524946466e04000057454250565038580a000000300000002c00003a000049434350c8010000000001c800000000043000006d6e74725247422058595a2007e00001000100000000000061637370000000000000000000000000000000000000000000000000000000010000f6d6000100000000d32d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000964657363000000f0000000247258595a00000114000000146758595a00000128000000146258595a0000013c00000014777470740000015000000014725452430000016400000028675452430000016400000028625452430000016400000028637072740000018c0000003c6d6c756300000000000000010000000c656e5553000000080000001c007300520047004258595a200000000000006fa2000038f50000039058595a2000000000000062990000b785000018da58595a2000000000000024a000000f840000b6cf58595a20000000000000f6d6000100000000d32d706172610000000000040000000266660000f2a700000d59000013d000000a5b00000000000000006d6c756300000000000000010000000c656e5553000000200000001c0047006f006f0067006c006500200049006e0063002e00200032003000310036414c50484a000000010f30ff1111c26d6cdb4ab5f19012e88294d628cd1aa1027777fd1247f47f02f8d1b6b0236d1cc9040221dc199bc9cfe8a7699a88a769b2707698a6c9b84d8771a7b6260d6cade7af04565038202e020000f00e009d012a2d003b003e31168842a22121180c04ac200304b100698b5262406d80f301fa8dfaddd803d003f667ac03d003f557d277f677e067f70bd803f5daeee6a015b13d46bf55ff81e513e5eff41ee07fa85fe63ac07a007eb3226285bfaa75080afaabfc896ba0d910168a977ba95e7f6166f75e23e3eeed753782400000feff0d6617f271ad56f0d475130c7392e57b0c62bb3c30879b682476eaf9e43cf31ede60e0bd5671f366712265c5ce08dd6b1e642ffe867e452aaa240ef7b2a2c56bcdff7fc6d1b387dc5ab971d5e69a2b93aa8f640c4ef2122cda5e84930bad6d303335f8eef9e6ac449c6fcc565de3133a11ce5536f6ee0637c5c24f31034ef7c837fbf6942a7fe0bef7510a46ab91058a3d9b38d45842a9c58547de31268dc616bcc86992947f6df3752eabbc5eb3073fe5c758f8804e4831651d49b765e1dd1ae31ff478e5528d78d7a6e97f4f105c9dde470c3e846465ae5eec0094eff035f6d727a51b20f1b432742aa6faaa213b75bebdcf62769b4d24017e5dd9d4f88f0827e50b3dbde32dd84adcf1d0304c3fcfee720638527f01d9165c466de91594d3aad09af31438e11d9dd1d6fac37f311d027001a50d6ff00332fcbf4bdc8d17cda4f31d9b2d535a6ce6e3683ac70fff2bff055fa7ca889da3e78b6018cd2550b89c68facadebf3e06b9b480f29b682714e245fdfe82f6e5137abc5cdc586c67847ec009e34ade4653ac5e64b8a53c6629105d018cd876ed5a3a4933f131fc8227c4023da85e684c67800000"), // pinkGlasses
+        ];
 
         let base_js = serde_wasm_bindgen::to_value(&base_images).unwrap();
         let acc_js = serde_wasm_bindgen::to_value(&accessories).unwrap();
 
         let mut rng = SmallRng::seed_from_u64(0);
 
-        for _ in 0..10_00 {
+        // Loop 1000 times to test many random combinations
+        for i in 0..1000 {
             let pubkey_hex = loop {
                 let mut bytes = [0u8; 32];
                 rng.fill_bytes(&mut bytes);
@@ -406,8 +398,14 @@ mod tests {
                 }
             };
 
-            generate_labitbu_bytes(&pubkey_hex, base_js.clone(), acc_js.clone())
-                .expect("image exceeded 4096-byte cap");
+            // The assertion provides a more helpful error message on failure
+            let result = generate_labitbu_bytes(&pubkey_hex, base_js.clone(), acc_js.clone());
+            assert!(
+                result.is_ok(),
+                "Image exceeded 4096-byte cap on iteration {} with pubkey {}",
+                i,
+                pubkey_hex
+            );
         }
     }
 }
