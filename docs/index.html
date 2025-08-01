@@ -7,78 +7,56 @@
   <title>(sleepy) labitbu.com 😴</title>
 
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.4; color-scheme: light; background:#fff !important;}
-    #labitbu-container { max-width: 720px; margin: 40px auto; padding: 0 1rem; }
-    button {
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin: 5px;
-    }
-    button:hover { background-color: #0056b3; }
-    #beta-banner{
-      background:#fff3cd;
-      color:#856404;
-      padding:0.75rem 1rem;
-      border-bottom:1px solid #ffeeba;
-      font-size:0.85rem;
-      text-align:center;
-      line-height:1.3;
-    }
-
-    button:disabled {
-      background-color: #6c757d !important;
-      cursor: default;
-      opacity: .55;
-    }
-    #deposit-btn:not(:disabled),
-    #mint-btn:not(:disabled) {
-      background-color: #28a745 !important;
-    }
-
-    #destination-address {
-      width: 100%; padding: 10px; font-size: 16px;
-      border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
-      margin-top: .5rem;
-    }
-    #address-error { height: 1em; margin-top: .5rem; }
+    body{font-family:system-ui,sans-serif;margin:0;line-height:1.4;background:#fff!important}
+    #labitbu-container{max-width:720px;margin:40px auto;padding:0 1rem}
+    button{background:#007bff;color:#fff;border:none;padding:10px 15px;border-radius:5px;cursor:pointer;font-size:16px;margin:5px}
+    button:hover{background:#0056b3}
+    button:disabled{background:#6c757d!important;cursor:default;opacity:.55}
+    #beta-banner{background:#fff3cd;color:#856404;padding:.75rem 1rem;border-bottom:1px solid #ffeeba;font-size:.85rem;text-align:center}
+    #destination-address{width:100%;padding:10px;font-size:16px;border:1px solid #ccc;border-radius:5px;box-sizing:border-box;margin-top:.5rem}
+    #address-error{height:1em;margin-top:.5rem}
   </style>
 </head>
 <body>
   <div id="beta-banner">
-    ⚠️ This is a <strong>beta</strong> product &mdash; free mint, no official
-    collection yet, only sleepy labitbu traits available.  
-    There's currently no labitbu explorer and no inscription wallet that supports this control-block protocol.  
-    <strong>Be careful!</strong>
-  </div>  
-  <div id="labitbu-container">
-    <h1 style="text-align:center;color:#333;">sleepy labitbu.com 😴</h1>
+    ⚠️ <strong>Beta</strong> product — only sleepy labitbu traits live. Be careful with your UTXOs!
+  </div>
+
+    <div id="labitbu-container">
+      <h1 style="text-align:center;color:#333;">sleepy labitbu.com 😴</h1>
 
     <div style="text-align:center;margin-bottom:2rem;">
       <a class="github-button" href="https://github.com/stutxo/labitbu"
          data-show-count="true" aria-label="Star stutxo/labitbu on GitHub">Star</a>
     </div>
 
-    <p style="text-align:center;color:#333;font-size:0.9rem;">Only sleepy labitbu's with sleep masks are being minted now. These tired little creatures are hiding in the merkle forest, can you find them all? Some say they hide in a mysterious place called control block 128</p>
 
-    <div style="text-align: center;">
-      <div style="color:#333;font-size:0.7rem;margin:0 auto 1rem auto; display: inline-block; text-align: left;">
-        <p style="font-size:0.9rem;margin:0 0 0.5rem 0;"><strong>Rules:</strong></p>
-        <ul style="margin:0;padding-left:1.2rem;">
-          <li>A labitbu's control block must have a depth of 128</li>
-          <li>The internal key used must be the labitbu NUMS collection key<br>
-            <code>96053db5b18967b5a410326ecca687441579225a6d190f398e2180deec6e429e</code>
-          </li>
-          <li>We will use ordinals theory to track the labitbu's</li>
-          <li>This is a proof of concept, be careful out there!</li>
-          <li>This is all running locally with xverse and mempool api, you always control your funds</li>
-        </ul>
-      </div>
+  <p style="text-align:center;color:#333;font-size:0.9rem;">
+    Only sleepy labitbu's with sleep masks are being minted now.<br>
+    These tired little creatures are hiding in the merkle forest—can you find them all?<br>
+    Rumour has it they're curled up in control-block 128. 🌲😴
+  </p>
+
+  <p style="text-align:center;color:blue;font-size:0.9rem;">
+  Some users had deposited funds to their deposit address and then we updated the site so it wouldn’t let them sweep the labitbus, so now we have a button to fix that.</p>
+
+    <p style="text-align:center;color:#333;font-size:0.9rem;">MORE TRAITS DROPPING SOON!!</p>
+
+
+  <div style="text-align:center;">
+    <div style="color:#333;font-size:0.7rem;margin:0 auto 1rem;display:inline-block;text-align:left;">
+      <p style="font-size:0.9rem;margin:0 0 0.5rem;"><strong>Rules:</strong></p>
+      <ul style="margin:0;padding-left:1.2rem;">
+        <li>A labitbu's control block must have a depth of <strong>128</strong>.</li>
+        <li>The internal key must be the labitbu NUMS collection key<br>
+            <code>96053db5b18967b5a410326ecca687441579225a6d190f398e2180deec6e429e</code></li>
+        <li>Ordinals theory tracks each labitbu.</li>
+        <li>This is a proof-of-concept—handle your sats with care.</li>
+        <li>Everything runs locally with Xverse + mempool API, so you always control your funds.</li>
+      </ul>
     </div>
+  </div>
+
 
 
     <p style="text-align:center;margin:2rem 0">
@@ -88,250 +66,176 @@
 
     <p style="text-align:center;color:#333;" id="deposit-address"></p>
 
-    <p id="deposit-area" style="text-align:center;margin-top:2rem;">
-      <button id="deposit-btn" disabled>Deposit 10,000 sats</button>
+    <p style="text-align:center;margin:2rem 0">
+      <button id="sleepy-deposit-btn" disabled>Mint Sleepy (Deposit 10 000 sats)</button>
+      <button id="sweep-btn" disabled>Sweep Round 1</button>
     </p>
 
     <div id="destination-section" style="display:none;text-align:center;margin-bottom:2rem;">
       <label style="font-weight:bold;">Destination Address</label><br>
-      <label style="font-weight:bold;color:red;">
-        ⚠️ Use a wallet with full UTXO control (Ordinals-safe)
-      </label><br>
-      <small style="color:#555;">
-        Transfers follow ordinal theory; wallet must honour <strong>FIFO</strong>.
-      </small><br>
+      <label style="font-weight:bold;color:red;">⚠️ Ordinals-safe wallet required (FIFO)</label><br>
       <input id="destination-address" type="text" placeholder="bc1p… Taproot address" />
       <p id="address-error" style="color:red;"></p>
-
-      <button id="mint-btn" disabled>Mint Sleepy Labitbu</button>
+      <button id="mint-btn" disabled>Mint</button>
     </div>
 
     <div id="display-labitbu" style="text-align:center;margin-top:2rem;"></div>
   </div>
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <script src="https://mempool.space/mempool.js"></script>
 
   <script type="module">
-    import { request, AddressPurpose, RpcErrorCode } from 'https://esm.sh/sats-connect';
+    import { request, AddressPurpose } from 'https://esm.sh/sats-connect';
     import initWasm, { create_deposit_address, mint, generate_labitbu_bytes } from './pkg/labitbu.js';
     import mempoolJS from 'https://esm.sh/@mempool/mempool.js';
     import { Buffer } from 'https://esm.sh/buffer';
 
     const { labitbus, accessories } = await (await fetch('/labitbu-traits.json')).json();
-    const baseImageBytes = Object.values(labitbus).map(hexToBytes);
-    const accessoryBytes = Object.values(accessories).map(hexToBytes);
+    const round1Base  = Object.values(labitbus).map(hexToBytes);
+    const round1Acc   = Object.values(accessories).map(hexToBytes);
+
+    const { Lasnoozesnooze, traits } = await (await fetch('/lasnoozesnooze.json')).json();
+    const sleepyBase  = Object.values(Lasnoozesnooze).map(hexToBytes);
+    const sleepyAcc   = Object.values(traits).map(hexToBytes);
+
     await initWasm();
+    const { bitcoin:{ addresses, transactions, fees } } =
+      mempoolJS({ hostname:'mempool.space' });
 
-    const { bitcoin:{ addresses, transactions, fees } } = mempoolJS({ hostname:'mempool.space' });
-
-    const $connectBtn  = document.getElementById('connect-btn');
-    const $depositBtn  = document.getElementById('deposit-btn');
-    const $mintBtn     = document.getElementById('mint-btn');
-    const destInput    = document.getElementById('destination-address');
-    const addrElem     = document.getElementById('deposit-address');
-    const errElem      = document.getElementById('address-error');
-    const connectErrElem = document.getElementById('connect-error');
+    const $connectBtn     = document.getElementById('connect-btn');
+    const $sleepyBtn      = document.getElementById('sleepy-deposit-btn');
+    const $sweepBtn       = document.getElementById('sweep-btn');
+    const $mintBtn        = document.getElementById('mint-btn');
+    const destInput       = document.getElementById('destination-address');
+    const addrElem        = document.getElementById('deposit-address');
+    const errElem         = document.getElementById('address-error');
+    const connectErr      = document.getElementById('connect-error');
 
     let walletPaymentAddress = null;
-    let validDestinationAddress = null;
-    let currentPubkey = null;
-    let currentByteArray = null;
-    let generatedDepositAddress = null;
-    let depositMade = false;
-    let cachedUtxos = null;
+    let currentPubkey        = null;
+    let currentByteArray     = null;
+    let generatedAddress     = null;
+    let depositMade          = false;
+    let cachedUtxos          = null;
+    let sweepMode            = false;
+    let validDest            = null;
 
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-    function setDepositAddressText() {
-      addrElem.textContent = generatedDepositAddress ? `Labitbu address: ${generatedDepositAddress}` : '';
+    function setAddrText(){ addrElem.textContent = generatedAddress ? `Labitbu address: ${generatedAddress}` : ''; }
+    function maybeEnableSleepy(){ $sleepyBtn.disabled = !currentPubkey || sweepMode; }
+    function maybeEnableMint (){ $mintBtn.disabled = !(depositMade && cachedUtxos?.length && validDest); }
+    function renderImage(bytes){
+      const url = URL.createObjectURL(new Blob([bytes],{type:'image/webp'}));
+      const img = new Image(); img.src=url; img.style.maxWidth='100%'; img.style.marginTop='1rem';
+      document.getElementById('display-labitbu').replaceChildren(img);
     }
-
-    function maybeEnableDeposit() {
-      if (currentPubkey && currentByteArray && !depositMade) $depositBtn.disabled = false;
-      else $depositBtn.disabled = true;
+    function hexToBytes(hex){ const out=new Uint8Array(hex.length/2); for(let i=0;i<hex.length;i+=2) out[i/2]=parseInt(hex.substr(i,2),16); return out; }
+    async function waitForUtxo(addr){
+      while (true){ const u = await addresses.getAddressTxsUtxo({address:addr}); if(u.length) return u; await sleep(2000); }
     }
-    function maybeEnableMint() {
-      if (depositMade && cachedUtxos?.length && validDestinationAddress) $mintBtn.disabled = false;
-      else $mintBtn.disabled = true;
-    }
-
-    async function waitForUtxo(addr) {
-      while (true) {
-        const utxos = await addresses.getAddressTxsUtxo({ address: addr });
-        if (utxos.length) return utxos;
-        await sleep(2000);
-      }
-    }
-
-    async function refreshState() {
-      if (!generatedDepositAddress) return;
-      const utxos = await addresses.getAddressTxsUtxo({ address: generatedDepositAddress });
-      if (utxos.length) {
-        depositMade  = true;
-        cachedUtxos  = utxos;
-        document.getElementById('destination-section').style.display = 'block';
-      } else {
-        depositMade  = false;
-        cachedUtxos  = null;
-        document.getElementById('destination-section').style.display = 'none';
-      }
-      maybeEnableDeposit();
+    async function refreshState(){
+      if (!generatedAddress) return;
+      const u = await addresses.getAddressTxsUtxo({address:generatedAddress});
+      depositMade = !!u.length; cachedUtxos = u.length?u:null;
+      document.getElementById('destination-section').style.display =
+        (sweepMode || depositMade) ? 'block':'none';
       maybeEnableMint();
     }
 
-    $connectBtn.onclick = async () => {
-      try {
-        const resp = await request('wallet_connect', null);
-        if (resp.status !== 'success') throw resp.error || new Error('connect failed');
+    $connectBtn.onclick = async () =>{
+      try{
+        const resp = await request('wallet_connect',null);
+        if(resp.status!=='success') throw resp.error||new Error('connect failed');
+        const pay = resp.result.addresses.find(a=>a.purpose===AddressPurpose.Payment);
+        if(!pay) return alert('Wallet failed to return payment address');
+        walletPaymentAddress = pay.address;
+        currentPubkey = pay.publicKey.slice(2);
 
-        const pay = resp.result.addresses.find(a => a.purpose === AddressPurpose.Payment);
-        if (!pay) return alert('No payment address returned by wallet');
+        $connectBtn.textContent='Xverse Connected'; $connectBtn.disabled=true; $connectBtn.style.background='#6c757d';
+        $sleepyBtn.disabled=false; $sweepBtn.disabled=false;
 
-        walletPaymentAddress          = pay.address;
-        currentPubkey                 = pay.publicKey.slice(2);
-        $connectBtn.textContent       = 'Xverse Connected';
-        $connectBtn.disabled          = true;
-        $connectBtn.style.background  = '#6c757d';
-
-        try {
-        currentByteArray = generate_labitbu_bytes(
-            currentPubkey,
-            baseImageBytes,
-            accessoryBytes
-        );
-        } catch (e) {
-        connectErrElem.style.color = 'red';
-        connectErrElem.textContent =
-        typeof e === 'string'
-            ? e
-            : e?.message || e?.toString() || 'Unknown generation error';
-        return;
-        }
-
-        const blob = new Blob([currentByteArray], { type: 'image/webp' });
-        const url = URL.createObjectURL(blob);
-
-        const img = document.createElement('img');
-        img.src = url;
-        img.style.maxWidth = '100%';
-        img.style.marginTop = '1rem';
-
-        const displayDiv = document.getElementById('display-labitbu');
-        displayDiv.innerHTML = '';
-        displayDiv.appendChild(img);
-
-        const result = create_deposit_address(currentPubkey, currentByteArray);
-        if (!result) {
-          errElem.textContent = 'Failed to create deposit address';
-          return;
-        }
-
-        generatedDepositAddress = new TextDecoder().decode(result);
-        setDepositAddressText();
+        sweepMode=false;
+        currentByteArray = generate_labitbu_bytes(currentPubkey,sleepyBase,sleepyAcc);
+        renderImage(currentByteArray);
+        generatedAddress = new TextDecoder().decode(create_deposit_address(currentPubkey,currentByteArray));
+        setAddrText(); depositMade=false; cachedUtxos=null;
         await refreshState();
-      } catch (e) {
-        console.error(e);
-        alert(e.message || 'Wallet connect failed');
-      }
+        maybeEnableSleepy();
+      }catch(e){ console.error(e); alert(e.message||'Wallet connect failed'); }
     };
 
-    $depositBtn.onclick = async () => {
-      if (depositMade) return;
-      $depositBtn.disabled = true;
-      try {
-        let utxos = await addresses.getAddressTxsUtxo({ address: generatedDepositAddress });
-        if (!utxos.length) {
-          const send = await request('sendTransfer', {
-            recipients:[{ address: generatedDepositAddress, amount:10000, memo:'Labitbu mint' }]
-          });
-          if (send.status !== 'success') throw new Error(send.error?.message || 'sendTransfer failed');
+    $sleepyBtn.onclick = async ()=>{
+      if (sweepMode) return;
+      generateSleepyAddress();
+      maybeEnableSleepy();
+      $sleepyBtn.disabled=true;
+      try{
+        let u = await addresses.getAddressTxsUtxo({address:generatedAddress});
+        if(!u.length){
+          const tx = await request('sendTransfer',{
+            recipients:[{address:generatedAddress,amount:10000,memo:'Labitbu sleepy mint'}]});
+          if(tx.status!=='success') throw new Error(tx.error?.message||'sendTransfer failed');
         }
-        $depositBtn.textContent = 'Waiting for utxo deposit…';
-        utxos = await waitForUtxo(generatedDepositAddress);
+        $sleepyBtn.textContent='Waiting for deposit…';
+        u = await waitForUtxo(generatedAddress);
+        cachedUtxos=u; depositMade=true;
+        $sleepyBtn.textContent='Deposit confirmed'; maybeEnableMint();
+        document.getElementById('destination-section').style.display='block';
+      }catch(e){ console.error(e); $sleepyBtn.textContent='Mint Sleepy (Deposit 10 000 sats)'; $sleepyBtn.disabled=false; }
+    };
+    function generateSleepyAddress(){
+      sweepMode=false;
+      currentByteArray = generate_labitbu_bytes(currentPubkey,sleepyBase,sleepyAcc);
+      renderImage(currentByteArray);
+      generatedAddress = new TextDecoder().decode(create_deposit_address(currentPubkey,currentByteArray));
+      setAddrText();
+    }
 
-        cachedUtxos  = utxos;
-        depositMade  = true;
-        $depositBtn.textContent = 'Deposit confirmed';
-        document.getElementById('destination-section').style.display = 'block';
-        maybeEnableMint();
-      } catch (e) {
-        console.error(e);
-        $depositBtn.disabled = false;
-      } finally {
-        clearInterval(loaderId);
-      }
+    $sweepBtn.onclick = async ()=>{
+      sweepMode=true; $sleepyBtn.disabled=true;
+      currentByteArray = generate_labitbu_bytes(currentPubkey,round1Base,round1Acc);
+      renderImage(currentByteArray);
+      generatedAddress = new TextDecoder().decode(create_deposit_address(currentPubkey,currentByteArray));
+      setAddrText();
+      await refreshState();
+      if(!depositMade){
+        errElem.style.color='red';
+        errElem.textContent='No sats found at your Round-1 address — nothing to sweep yet. refresh and mint a sleepy labitbu';
+      }else{ errElem.textContent=''; }
     };
 
-    $mintBtn.onclick = async () => {
-      if (!depositMade || !cachedUtxos?.length) return;
-      try {
-        const inputs = cachedUtxos.map(u => ({
-          previous_output:`${u.txid}:${u.vout}`,
-          sequence:0xFFFFFFFD, script_sig:'', witness:[]
+    $mintBtn.onclick = async ()=>{
+      if(!depositMade||!cachedUtxos?.length) return;
+      try{
+        const inputs = cachedUtxos.map(u=>({previous_output:`${u.txid}:${u.vout}`,sequence:0xFFFFFFFD,script_sig:'',witness:[]}));
+        const prevOuts = await Promise.all(cachedUtxos.map(async ({txid,vout})=>{
+          const out=(await transactions.getTx({txid})).vout[vout];
+          return{value:Number(out.value),script_pubkey:out.scriptpubkey};
         }));
-        const prevTxouts = await Promise.all(
-          cachedUtxos.map(async ({ txid,vout }) => {
-            const out = (await transactions.getTx({ txid })).vout[vout];
-            return { value:Number(out.value), script_pubkey:out.scriptpubkey };
-          })
-        );
-
         const total = cachedUtxos.reduce((s,u)=>s+BigInt(u.value),0n);
-        const { fastestFee } = await fees.getFeesRecommended();
-        const vbytes = 1200n;
-        const fee    = BigInt(Math.ceil(fastestFee))*vbytes;
-        if (fee >= total) { errElem.textContent='Fee ≥ deposit'; return; }
-        if (total-fee < 330n){
-          errElem.textContent = `Output would be dust (${total-fee} sats)`; return;
-        }
+        const fee   = BigInt(Math.ceil((await fees.getFeesRecommended()).fastestFee))*1200n;
+        if(fee>=total) {errElem.textContent='Fee ≥ deposit';return;}
+        if(total-fee<330n){errElem.textContent='Dust output';return;}
 
         const psbtB64 = Buffer.from(
-          mint(currentPubkey,currentByteArray,total,validDestinationAddress,fee,inputs,prevTxouts)
+          mint(currentPubkey,currentByteArray,total,validDest,fee,inputs,prevOuts)
         ).toString('base64');
-
-        const sign = await request('signPsbt',{
-          psbt:psbtB64,
-          signInputs:{ [walletPaymentAddress]:[0] },
-          broadcast:true
-        });
-        if (sign.status!=='success') throw new Error(sign.error?.message||'signPsbt failed');
-
-        const { txid } = sign.result;
-        const url = `https://mempool.space/tx/${txid}`;
-
-        errElem.style.color = 'green';
-        errElem.innerHTML = `<a href="${url}" target="_blank" rel="noopener">${url}</a>`;
-
-        $mintBtn.disabled = true;
-      } catch(e){
-        console.error(e);
-        errElem.style.color='red';
-        errElem.textContent = e.message || 'Unknown error';
-      }
+        const s = await request('signPsbt',{psbt:psbtB64,signInputs:{[walletPaymentAddress]:[0]},broadcast:true});
+        if(s.status!=='success') throw new Error(s.error?.message||'signPsbt failed');
+        errElem.style.color='green';
+        errElem.innerHTML=`<a href="https://mempool.space/tx/${s.result.txid}" target="_blank" rel="noopener">View tx</a>`;
+        $mintBtn.disabled=true;
+      }catch(e){ console.error(e); errElem.style.color='red'; errElem.textContent=e.message||'Unknown error'; }
     };
 
-    destInput.addEventListener('input', () => {
+    destInput.addEventListener('input',()=>{
       errElem.textContent='';
-      validDestinationAddress=null;
-      maybeEnableMint();
-
-      const addr = destInput.value.trim();
-      if (!addr.startsWith('bc1p')) { errElem.textContent='Must start bc1p'; return; }
-      if (addr.length!==62)         { errElem.textContent='Must be 62 chars'; return; }
-
-      validDestinationAddress = addr;
-      maybeEnableMint();
+      validDest=null; maybeEnableMint();
+      const a=destInput.value.trim();
+      if(!a.startsWith('bc1p')){errElem.textContent='Must start bc1p';return;}
+      if(a.length!==62){errElem.textContent='Must be 62 chars';return;}
+      validDest=a; maybeEnableMint();
     });
-
-    function hexToBytes(hex) {
-        const bytes = new Uint8Array(hex.length / 2);
-        for (let i = 0; i < hex.length; i += 2) {
-            bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-        }
-        return bytes;
-    }
-
   </script>
 </body>
 </html>

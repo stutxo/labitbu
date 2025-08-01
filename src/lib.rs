@@ -37,17 +37,20 @@ pub fn generate_labitbu_bytes(
 
     let mut rng = create_rng_from_pubkey(pubkey_hex)?;
 
-    // Only use sleepy labitbu (index 3 in the array)
-    let base_idx = 3; // Force sleepy labitbu
+    let base_idx = (rng.next_u32() as usize) % base_images.len();
     let base_image_data = &base_images[base_idx];
 
     let mut base_img = image::load_from_memory(base_image_data)
         .map_err(|e| JsValue::from_str(&format!("Failed to load base image: {}", e)))?
         .to_rgba8();
 
-    // Always add sleep mask (index 2 in accessories array)
     let accessory_idx = if !accessories.is_empty() {
-        Some(2) // Force sleep mask
+        let roll = (rng.next_u32() as usize) % (accessories.len() + 1);
+        if roll < accessories.len() {
+            Some(roll)
+        } else {
+            None
+        }
     } else {
         None
     };
