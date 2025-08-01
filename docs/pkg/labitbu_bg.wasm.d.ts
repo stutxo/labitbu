@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
+export const generate_labitbu_bytes: (a: number, b: number, c: number, d: number, e: number) => void;
 export const mint: (a: number, b: number, c: number, d: number, e: number, f: bigint, g: number, h: number, i: bigint, j: number, k: number) => void;
 export const create_deposit_address: (a: number, b: number, c: number, d: number, e: number) => void;
 export const rustsecp256k1_v0_10_0_context_create: (a: number) => number;

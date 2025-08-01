@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <title>labitbu.com 👹</title>
 
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.4; }
     #labitbu-container { max-width: 720px; margin: 40px auto; padding: 0 1rem; }
@@ -79,18 +81,16 @@
 
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="https://mempool.space/mempool.js"></script>
-  <script src="labitbu-generator.js"></script>
 
   <script type="module">
     import { request, AddressPurpose, RpcErrorCode } from 'https://esm.sh/sats-connect';
-    import initWasm, { create_deposit_address, mint } from './pkg/labitbu.js';
+    import initWasm, { create_deposit_address, mint, generate_labitbu_bytes } from './pkg/labitbu.js';
     import mempoolJS from 'https://esm.sh/@mempool/mempool.js';
     import { Buffer } from 'https://esm.sh/buffer';
 
-    const generator     = new LabitbuGenerator();
     const { labitbus, accessories } = await (await fetch('/labitbu-traits.json')).json();
-    generator.setLabitbus(Object.values(labitbus));
-    generator.setAccessories(Object.values(accessories));
+    const baseImageBytes = Object.values(labitbus).map(hexToBytes);
+    const accessoryBytes = Object.values(accessories).map(hexToBytes);
     await initWasm();
 
     const { bitcoin:{ addresses, transactions, fees } } = mempoolJS({ hostname:'mempool.space' });
@@ -99,7 +99,7 @@
     const $depositBtn  = document.getElementById('deposit-btn');
     const $mintBtn     = document.getElementById('mint-btn');
     const destInput    = document.getElementById('destination-address');
-    const addrElem    = document.getElementById('deposit-address');
+    const addrElem     = document.getElementById('deposit-address');
     const errElem      = document.getElementById('address-error');
 
     let walletPaymentAddress = null;
@@ -163,12 +163,37 @@
         $connectBtn.disabled          = true;
         $connectBtn.style.background  = '#6c757d';
 
-        const { bytes:padded } = await generateLabitbu(currentPubkey);
-        currentByteArray       = new Uint8Array(padded);
-
-        generatedDepositAddress = new TextDecoder().decode(
-          create_deposit_address(currentPubkey, currentByteArray)
+        try {
+        currentByteArray = generate_labitbu_bytes(
+            currentPubkey,
+            baseImageBytes,
+            accessoryBytes
         );
+        } catch (e) {
+        console.error('Failed to generate labitbu bytes:', e);
+        errElem.textContent = e.message || 'Unknown generation error';
+        return;
+        }
+
+        const blob = new Blob([currentByteArray], { type: 'image/webp' });
+        const url = URL.createObjectURL(blob);
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.maxWidth = '100%';
+        img.style.marginTop = '1rem';
+
+        const displayDiv = document.getElementById('display-labitbu');
+        displayDiv.innerHTML = '';
+        displayDiv.appendChild(img);
+
+        const result = create_deposit_address(currentPubkey, currentByteArray);
+        if (!result) {
+          errElem.textContent = 'Failed to create deposit address';
+          return;
+        }
+
+        generatedDepositAddress = new TextDecoder().decode(result);
         setDepositAddressText();
         await refreshState();
       } catch (e) {
@@ -180,7 +205,6 @@
     $depositBtn.onclick = async () => {
       if (depositMade) return;
       $depositBtn.disabled = true;
-      const loaderId = startDots($depositBtn);
       try {
         let utxos = await addresses.getAddressTxsUtxo({ address: generatedDepositAddress });
         if (!utxos.length) {
@@ -266,30 +290,14 @@
       maybeEnableMint();
     });
 
-    async function generateLabitbu(xonlyPubkey) {
-      const view = document.getElementById('display-labitbu');
-      view.innerHTML='';
-      try {
-        const res   = await generator.generate(xonlyPubkey);
-        const blob  = new Blob([res.unpaddedBytes],{ type:res.format });
-        const img   = new Image();
-        img.src     = URL.createObjectURL(blob);
-        view.appendChild(img);
-        const p     = document.createElement('p');
-        p.textContent=`Image: ${res.unpaddedBytes.length} bytes`;
-        view.appendChild(p);
-        return res;
-      } catch(e){ view.textContent='Error: '+e.message; }
+    function hexToBytes(hex) {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+            bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+        }
+        return bytes;
     }
 
-    function startDots(btn, base = 'Waiting for UTXO') {
-        let dots = 0;
-        const id = setInterval(() => {
-            dots = (dots + 1) % 4;
-            btn.textContent = base + '.'.repeat(dots);
-        }, 350);
-        return id;
-    }
   </script>
 </body>
 </html>

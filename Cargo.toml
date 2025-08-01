@@ -20,6 +20,11 @@ secp256k1 = { version = "0.29.0", features = [
     "serde",
     "rand",
 ] }
+image = "0.24"
+image-webp = "0.2.3"
+hex = "0.4.3"
+rand = { version = "0.8", features = ["small_rng"] }
+getrandom = { version = "0.2", features = ["js"] }
 
 [lib]
 crate-type = ["cdylib"]

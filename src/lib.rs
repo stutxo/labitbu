@@ -9,9 +9,207 @@ use bitcoin::{
     Address, Amount, Network, Psbt, ScriptBuf, TapNodeHash, TapSighashType, Transaction, TxIn,
     TxOut, XOnlyPublicKey,
 };
+use image_webp::{ColorType, EncoderParams, WebPEncoder};
+use rand::{rngs::SmallRng, RngCore, SeedableRng};
 use secp256k1::Secp256k1;
-use serde_wasm_bindgen;
+use serde_wasm_bindgen::{self, from_value};
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
+
+use hex::FromHex;
+use image::RgbaImage;
+
+#[wasm_bindgen]
+pub fn generate_labitbu_bytes(
+    pubkey_hex: &str,
+    base_images_js: JsValue,
+    accessories_js: JsValue,
+) -> Result<Box<[u8]>, JsValue> {
+    const TARGET_SIZE: usize = 4096;
+
+    let base_images: Vec<Vec<u8>> = from_value(base_images_js)
+        .map_err(|e| JsValue::from_str(&format!("Failed to parse base images: {}", e)))?;
+    let accessories: Vec<Vec<u8>> = from_value(accessories_js)
+        .map_err(|e| JsValue::from_str(&format!("Failed to parse accessories: {}", e)))?;
+
+    if base_images.is_empty() {
+        return Err(JsValue::from_str("No base images provided"));
+    }
+
+    let mut rng = create_rng_from_pubkey(pubkey_hex)?;
+
+    let base_idx = (rng.next_u32() as usize) % base_images.len();
+    let base_image_data = &base_images[base_idx];
+
+    let mut base_img = image::load_from_memory(base_image_data)
+        .map_err(|e| JsValue::from_str(&format!("Failed to load base image: {}", e)))?
+        .to_rgba8();
+
+    let accessory_idx = if !accessories.is_empty() {
+        let roll = (rng.next_u32() as usize) % (accessories.len() + 1);
+        if roll < accessories.len() {
+            Some(roll)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    let hue_shift = (rng.next_u32() % 360) as f32;
+
+    apply_hue_shift(&mut base_img, hue_shift);
+
+    if let Some(acc_idx) = accessory_idx {
+        let accessory_data = &accessories[acc_idx];
+        let accessory_img = image::load_from_memory(accessory_data)
+            .map_err(|e| JsValue::from_str(&format!("Failed to load accessory: {}", e)))?
+            .to_rgba8();
+
+        composite_images(&mut base_img, &accessory_img);
+    }
+
+    let webp_data = encode_to_webp_deterministic(&base_img)?;
+
+    if webp_data.len() >= TARGET_SIZE {
+        return Err(JsValue::from_str(&format!(
+            "Generated image is {} bytes - exceeds 4096 B cap",
+            webp_data.len()
+        )));
+    }
+
+    let mut padded = vec![0u8; TARGET_SIZE];
+    padded[..webp_data.len()].copy_from_slice(&webp_data);
+
+    Ok(padded.into_boxed_slice())
+}
+
+fn create_rng_from_pubkey(pubkey_hex: &str) -> Result<SmallRng, JsValue> {
+    let pubkey_bytes = <[u8; 32]>::from_hex(pubkey_hex)
+        .map_err(|e| JsValue::from_str(&format!("Invalid hex: {}", e)))?;
+
+    let mut engine = sha256::Hash::engine();
+    engine.input(&pubkey_bytes);
+    let hash = sha256::Hash::from_engine(engine);
+    let seed_bytes: [u8; 32] = hash.to_byte_array();
+
+    Ok(SmallRng::seed_from_u64(u64::from_le_bytes(
+        seed_bytes[..8].try_into().unwrap(),
+    )))
+}
+
+fn apply_hue_shift(img: &mut RgbaImage, hue_shift: f32) {
+    for pixel in img.pixels_mut() {
+        let [r, g, b, a] = pixel.0;
+        if a == 0 || (r > 240 && g > 240 && b > 240) {
+            continue;
+        }
+
+        let (h, s, l) = rgb_to_hsl(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0);
+        let new_h = (hue_shift + h) % 360.0;
+        let new_s = s.max(0.6);
+        let (new_r, new_g, new_b) = hsl_to_rgb(new_h, new_s, l);
+
+        pixel.0 = [
+            (new_r * 255.0) as u8,
+            (new_g * 255.0) as u8,
+            (new_b * 255.0) as u8,
+            a,
+        ];
+    }
+}
+
+fn composite_images(base: &mut RgbaImage, accessory: &RgbaImage) {
+    let (base_w, base_h) = base.dimensions();
+    let (acc_w, acc_h) = accessory.dimensions();
+
+    for y in 0..base_h.min(acc_h) {
+        for x in 0..base_w.min(acc_w) {
+            let base_pixel = base.get_pixel_mut(x, y);
+            let acc_pixel = accessory.get_pixel(x, y);
+
+            if acc_pixel.0[3] > 0 {
+                let alpha = acc_pixel.0[3] as f32 / 255.0;
+                let inv_alpha = 1.0 - alpha;
+
+                base_pixel.0[0] =
+                    ((base_pixel.0[0] as f32 * inv_alpha) + (acc_pixel.0[0] as f32 * alpha)) as u8;
+                base_pixel.0[1] =
+                    ((base_pixel.0[1] as f32 * inv_alpha) + (acc_pixel.0[1] as f32 * alpha)) as u8;
+                base_pixel.0[2] =
+                    ((base_pixel.0[2] as f32 * inv_alpha) + (acc_pixel.0[2] as f32 * alpha)) as u8;
+                base_pixel.0[3] = base_pixel.0[3].max(acc_pixel.0[3]);
+            }
+        }
+    }
+}
+
+pub fn encode_to_webp_deterministic(img: &RgbaImage) -> Result<Vec<u8>, JsValue> {
+    let (w, h) = img.dimensions();
+    let mut out = Vec::new();
+
+    let mut enc = WebPEncoder::new(&mut out);
+    let mut params = EncoderParams::default();
+    params.use_predictor_transform = true;
+    enc.set_params(params);
+
+    enc.encode(img.as_raw(), w, h, ColorType::Rgba8)
+        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+
+    Ok(out)
+}
+
+fn rgb_to_hsl(r: f32, g: f32, b: f32) -> (f32, f32, f32) {
+    let max = r.max(g.max(b));
+    let min = r.min(g.min(b));
+    let diff = max - min;
+    let l = (max + min) / 2.0;
+
+    if diff == 0.0 {
+        return (0.0, 0.0, l);
+    }
+
+    let s = if l > 0.5 {
+        diff / (2.0 - max - min)
+    } else {
+        diff / (max + min)
+    };
+    let h = if max == r {
+        60.0 * (((g - b) / diff) % 6.0)
+    } else if max == g {
+        60.0 * (((b - r) / diff) + 2.0)
+    } else {
+        60.0 * (((r - g) / diff) + 4.0)
+    };
+
+    let h = if h < 0.0 { h + 360.0 } else { h };
+    (h, s, l)
+}
+
+fn hsl_to_rgb(h: f32, s: f32, l: f32) -> (f32, f32, f32) {
+    if s == 0.0 {
+        return (l, l, l);
+    }
+
+    let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
+    let x = c * (1.0 - ((h / 60.0) % 2.0 - 1.0).abs());
+    let m = l - c / 2.0;
+
+    let (r_prime, g_prime, b_prime) = if h < 60.0 {
+        (c, x, 0.0)
+    } else if h < 120.0 {
+        (x, c, 0.0)
+    } else if h < 180.0 {
+        (0.0, c, x)
+    } else if h < 240.0 {
+        (0.0, x, c)
+    } else if h < 300.0 {
+        (x, 0.0, c)
+    } else {
+        (c, 0.0, x)
+    };
+
+    (r_prime + m, g_prime + m, b_prime + m)
+}
 
 #[wasm_bindgen]
 pub fn mint(
