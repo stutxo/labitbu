@@ -149,11 +149,20 @@ pub fn encode_to_webp_deterministic(img: &RgbaImage) -> Result<Vec<u8>, JsValue>
 
     let mut enc = WebPEncoder::new(&mut out);
     let mut params = EncoderParams::default();
-    params.use_predictor_transform = true;
+    params.use_predictor_transform = false;
     enc.set_params(params);
 
-    enc.encode(img.as_raw(), w, h, ColorType::Rgba8)
-        .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    if img.pixels().all(|p| p.0[3] == 255) {
+        let mut rgb_buf = Vec::with_capacity((w * h * 3) as usize);
+        for px in img.pixels() {
+            rgb_buf.extend_from_slice(&px.0[..3]);
+        }
+        enc.encode(&rgb_buf, w, h, ColorType::Rgb8)
+            .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    } else {
+        enc.encode(img.as_raw(), w, h, ColorType::Rgba8)
+            .map_err(|e| JsValue::from_str(&e.to_string()))?;
+    }
 
     Ok(out)
 }

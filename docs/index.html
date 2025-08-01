@@ -6,8 +6,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <title>labitbu.com 👹</title>
 
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.4; }
     #labitbu-container { max-width: 720px; margin: 40px auto; padding: 0 1rem; }
@@ -55,6 +53,7 @@
     <p style="text-align:center;margin:2rem 0">
       <button id="connect-btn">Connect Xverse</button>
     </p>
+    <p id="connect-error" style="color:red;text-align:center;min-height:1em;"></p>
 
     <p style="text-align:center;color:#333;" id="deposit-address"></p>
 
@@ -101,6 +100,7 @@
     const destInput    = document.getElementById('destination-address');
     const addrElem     = document.getElementById('deposit-address');
     const errElem      = document.getElementById('address-error');
+    const connectErrElem = document.getElementById('connect-error');
 
     let walletPaymentAddress = null;
     let validDestinationAddress = null;
@@ -170,8 +170,11 @@
             accessoryBytes
         );
         } catch (e) {
-        console.error('Failed to generate labitbu bytes:', e);
-        errElem.textContent = e.message || 'Unknown generation error';
+        connectErrElem.style.color = 'red';
+        connectErrElem.textContent =
+        typeof e === 'string'
+            ? e
+            : e?.message || e?.toString() || 'Unknown generation error';
         return;
         }
 
