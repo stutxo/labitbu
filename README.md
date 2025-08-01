@@ -1,5 +1,11 @@
 # labitbu
 
+This is a fun project inspired by our plebfi 2025 second place hackathon project! @jarolrod @luisschwab @PlumBuggle68 
+
+original here 
+
+https://github.com/luisschwab/labubu-assets
+
 # WARNING!!! THIS IS FOR FUN, IT MAY BE BROKEN, BE CAREFUL AND USE A NEW XVERSE ACCOUNT!!!!
 
 ## What make a labitbu a labitbu?? 
