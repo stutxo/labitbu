@@ -13,6 +13,8 @@ https://github.com/luisschwab/labubu-assets
 1. Labitbu's have to fill all 4096kb of the control block
 2. Each labitbu will share the same internal NUMs key in the control block, we can use this to track them easier
 
+### Labitbu internal key: 96053db5b18967b5a410326ecca687441579225a6d190f398e2180deec6e429e
+
 ## How it works 
 
 1. create deposit address with xverse pubkey as the script spend

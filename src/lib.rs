@@ -389,7 +389,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
 
         // Loop 1000 times to test many random combinations
-        for i in 0..1000 {
+        for i in 0..1000000 {
             let pubkey_hex = loop {
                 let mut bytes = [0u8; 32];
                 rng.fill_bytes(&mut bytes);
