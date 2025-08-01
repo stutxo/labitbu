@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <title>labitbu.com 👹</title>
+
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.4; color-scheme: light; background:#fff !important;}
+    #labitbu-container { max-width: 720px; margin: 40px auto; padding: 0 1rem; }
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover { background-color: #0056b3; }
+
+    button:disabled {
+      background-color: #6c757d !important;
+      cursor: default;
+      opacity: .55;
+    }
+    #deposit-btn:not(:disabled),
+    #mint-btn:not(:disabled) {
+      background-color: #28a745 !important;
+    }
+
+    #destination-address {
+      width: 100%; padding: 10px; font-size: 16px;
+      border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
+      margin-top: .5rem;
+    }
+    #address-error { height: 1em; margin-top: .5rem; }
+  </style>
+</head>
+<body>
+  <div id="labitbu-container">
+    <h1 style="text-align:center;color:#333;">labitbu.com 👹</h1>
+
+    <div style="text-align:center;margin-bottom:2rem;">
+      <a class="github-button" href="https://github.com/stutxo/labitbu"
+         data-show-count="true" aria-label="Star stutxo/labitbu on GitHub">Star</a>
+    </div>
+
+    <p style="text-align:center;color:#333;">An unknown amount of labitbu's have escaped and are running free in the merkle forest, can you find them all? Some say they hide in a mysterious place called control block 128</p>
+    
+    <p style="text-align:center;margin:2rem 0">
+      <button id="connect-btn">Connect Xverse</button>
+    </p>
+    <p id="connect-error" style="color:red;text-align:center;min-height:1em;"></p>
+
+    <p style="text-align:center;color:#333;" id="deposit-address"></p>
+
+    <p id="deposit-area" style="text-align:center;margin-top:2rem;">
+      <button id="deposit-btn" disabled>Deposit 10,000 sats</button>
+    </p>
+
+    <div id="destination-section" style="display:none;text-align:center;margin-bottom:2rem;">
+      <label style="font-weight:bold;">Destination Address</label><br>
+      <label style="font-weight:bold;color:red;">
+        ⚠️ Use a wallet with full UTXO control (Ordinals-safe)
+      </label><br>
+      <small style="color:#555;">
+        Transfers follow ordinal theory; wallet must honour <strong>FIFO</strong>.
+      </small><br>
+      <input id="destination-address" type="text" placeholder="bc1p… Taproot address" />
+      <p id="address-error" style="color:red;"></p>
+
+      <button id="mint-btn" disabled>Mint Labitbu</button>
+    </div>
+
+    <div id="display-labitbu" style="text-align:center;margin-top:2rem;"></div>
+  </div>
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="https://mempool.space/mempool.js"></script>
+
+  <script type="module">
+    import { request, AddressPurpose, RpcErrorCode } from 'https://esm.sh/sats-connect';
+    import initWasm, { create_deposit_address, mint, generate_labitbu_bytes } from './pkg/labitbu.js';
+    import mempoolJS from 'https://esm.sh/@mempool/mempool.js';
+    import { Buffer } from 'https://esm.sh/buffer';
+
+    const { labitbus, accessories } = await (await fetch('/labitbu-traits.json')).json();
+    const baseImageBytes = Object.values(labitbus).map(hexToBytes);
+    const accessoryBytes = Object.values(accessories).map(hexToBytes);
+    await initWasm();
+
+    const { bitcoin:{ addresses, transactions, fees } } = mempoolJS({ hostname:'mempool.space' });
+
+    const $connectBtn  = document.getElementById('connect-btn');
+    const $depositBtn  = document.getElementById('deposit-btn');
+    const $mintBtn     = document.getElementById('mint-btn');
+    const destInput    = document.getElementById('destination-address');
+    const addrElem     = document.getElementById('deposit-address');
+    const errElem      = document.getElementById('address-error');
+    const connectErrElem = document.getElementById('connect-error');
+
+    let walletPaymentAddress = null;
+    let validDestinationAddress = null;
+    let currentPubkey = null;
+    let currentByteArray = null;
+    let generatedDepositAddress = null;
+    let depositMade = false;
+    let cachedUtxos = null;
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    function setDepositAddressText() {
+      addrElem.textContent = generatedDepositAddress ? `Labitbu address: ${generatedDepositAddress}` : '';
+    }
+
+    function maybeEnableDeposit() {
+      if (currentPubkey && currentByteArray && !depositMade) $depositBtn.disabled = false;
+      else $depositBtn.disabled = true;
+    }
+    function maybeEnableMint() {
+      if (depositMade && cachedUtxos?.length && validDestinationAddress) $mintBtn.disabled = false;
+      else $mintBtn.disabled = true;
+    }
+
+    async function waitForUtxo(addr) {
+      while (true) {
+        const utxos = await addresses.getAddressTxsUtxo({ address: addr });
+        if (utxos.length) return utxos;
+        await sleep(2000);
+      }
+    }
+
+    async function refreshState() {
+      if (!generatedDepositAddress) return;
+      const utxos = await addresses.getAddressTxsUtxo({ address: generatedDepositAddress });
+      if (utxos.length) {
+        depositMade  = true;
+        cachedUtxos  = utxos;
+        document.getElementById('destination-section').style.display = 'block';
+      } else {
+        depositMade  = false;
+        cachedUtxos  = null;
+        document.getElementById('destination-section').style.display = 'none';
+      }
+      maybeEnableDeposit();
+      maybeEnableMint();
+    }
+
+    $connectBtn.onclick = async () => {
+      try {
+        const resp = await request('wallet_connect', null);
+        if (resp.status !== 'success') throw resp.error || new Error('connect failed');
+
+        const pay = resp.result.addresses.find(a => a.purpose === AddressPurpose.Payment);
+        if (!pay) return alert('No payment address returned by wallet');
+
+        walletPaymentAddress          = pay.address;
+        currentPubkey                 = pay.publicKey.slice(2);
+        $connectBtn.textContent       = 'Xverse Connected';
+        $connectBtn.disabled          = true;
+        $connectBtn.style.background  = '#6c757d';
+
+        try {
+        currentByteArray = generate_labitbu_bytes(
+            currentPubkey,
+            baseImageBytes,
+            accessoryBytes
+        );
+        } catch (e) {
+        connectErrElem.style.color = 'red';
+        connectErrElem.textContent =
+        typeof e === 'string'
+            ? e
+            : e?.message || e?.toString() || 'Unknown generation error';
+        return;
+        }
+
+        const blob = new Blob([currentByteArray], { type: 'image/webp' });
+        const url = URL.createObjectURL(blob);
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.maxWidth = '100%';
+        img.style.marginTop = '1rem';
+
+        const displayDiv = document.getElementById('display-labitbu');
+        displayDiv.innerHTML = '';
+        displayDiv.appendChild(img);
+
+        const result = create_deposit_address(currentPubkey, currentByteArray);
+        if (!result) {
+          errElem.textContent = 'Failed to create deposit address';
+          return;
+        }
+
+        generatedDepositAddress = new TextDecoder().decode(result);
+        setDepositAddressText();
+        await refreshState();
+      } catch (e) {
+        console.error(e);
+        alert(e.message || 'Wallet connect failed');
+      }
+    };
+
+    $depositBtn.onclick = async () => {
+      if (depositMade) return;
+      $depositBtn.disabled = true;
+      try {
+        let utxos = await addresses.getAddressTxsUtxo({ address: generatedDepositAddress });
+        if (!utxos.length) {
+          const send = await request('sendTransfer', {
+            recipients:[{ address: generatedDepositAddress, amount:10000, memo:'Labitbu mint' }]
+          });
+          if (send.status !== 'success') throw new Error(send.error?.message || 'sendTransfer failed');
+        }
+        $depositBtn.textContent = 'Waiting for utxo deposit…';
+        utxos = await waitForUtxo(generatedDepositAddress);
+
+        cachedUtxos  = utxos;
+        depositMade  = true;
+        $depositBtn.textContent = 'Deposit confirmed';
+        document.getElementById('destination-section').style.display = 'block';
+        maybeEnableMint();
+      } catch (e) {
+        console.error(e);
+        $depositBtn.disabled = false;
+      } finally {
+        clearInterval(loaderId);
+      }
+    };
+
+    $mintBtn.onclick = async () => {
+      if (!depositMade || !cachedUtxos?.length) return;
+      try {
+        const inputs = cachedUtxos.map(u => ({
+          previous_output:`${u.txid}:${u.vout}`,
+          sequence:0xFFFFFFFD, script_sig:'', witness:[]
+        }));
+        const prevTxouts = await Promise.all(
+          cachedUtxos.map(async ({ txid,vout }) => {
+            const out = (await transactions.getTx({ txid })).vout[vout];
+            return { value:Number(out.value), script_pubkey:out.scriptpubkey };
+          })
+        );
+
+        const total = cachedUtxos.reduce((s,u)=>s+BigInt(u.value),0n);
+        const { fastestFee } = await fees.getFeesRecommended();
+        const vbytes = 1200n;
+        const fee    = BigInt(Math.ceil(fastestFee))*vbytes;
+        if (fee >= total) { errElem.textContent='Fee ≥ deposit'; return; }
+        if (total-fee < 330n){
+          errElem.textContent = `Output would be dust (${total-fee} sats)`; return;
+        }
+
+        const psbtB64 = Buffer.from(
+          mint(currentPubkey,currentByteArray,total,validDestinationAddress,fee,inputs,prevTxouts)
+        ).toString('base64');
+
+        const sign = await request('signPsbt',{
+          psbt:psbtB64,
+          signInputs:{ [walletPaymentAddress]:[0] },
+          broadcast:true
+        });
+        if (sign.status!=='success') throw new Error(sign.error?.message||'signPsbt failed');
+
+        const { txid } = sign.result;
+        const url = `https://mempool.space/tx/${txid}`;
+
+        errElem.style.color = 'green';
+        errElem.innerHTML = `<a href="${url}" target="_blank" rel="noopener">${url}</a>`;
+
+        $mintBtn.disabled = true;
+      } catch(e){
+        console.error(e);
+        errElem.style.color='red';
+        errElem.textContent = e.message || 'Unknown error';
+      }
+    };
+
+    destInput.addEventListener('input', () => {
+      errElem.textContent='';
+      validDestinationAddress=null;
+      maybeEnableMint();
+
+      const addr = destInput.value.trim();
+      if (!addr.startsWith('bc1p')) { errElem.textContent='Must start bc1p'; return; }
+      if (addr.length!==62)         { errElem.textContent='Must be 62 chars'; return; }
+
+      validDestinationAddress = addr;
+      maybeEnableMint();
+    });
+
+    function hexToBytes(hex) {
+        const bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+            bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+        }
+        return bytes;
+    }
+
+  </script>
+</body>
+</html>

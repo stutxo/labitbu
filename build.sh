@@ -25,4 +25,7 @@ wasm-pack build \
 
 rm -f "$PKG_DIR/.gitignore" "$PKG_DIR/README.md"
 
+cp -a -f index.html              "$DEST_DIR/"
+cp -a -f labitbu-traits.json     "$DEST_DIR/"
+
 ls -lh "$PKG_DIR/${PKG_NAME}_bg.wasm" "$PKG_DIR/${PKG_NAME}.js"
