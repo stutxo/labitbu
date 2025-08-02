@@ -104,6 +104,8 @@
       </div>
     </div>
 
+    <p style="text-align:center;color:red;font-size:0.9em;">BRB - labitbu</p>
+
     <div style="margin: 2rem 0">
       <button id="connect-btn">1. Connect Xverse</button>
       <p id="connect-error" style="color:red;"></p>
@@ -120,7 +122,7 @@
     <div id="deposit-section" style="display:none; margin-top:1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 8px;">
         <p>A Labitbu has been generated. Click below to fund its address.</p>
         <p>Deposit Address: <code id="deposit-address"></code></p>
-        <button id="initiate-deposit-btn">2. Deposit 10,000 sats</button>
+        <button id="initiate-deposit-btn">2. minting is closed for today, click here to sweep if you have already deposited</button>
         <div id="deposit-status" style="margin-top:1rem;"></div>
     </div>
     
@@ -231,7 +233,7 @@
                 setTimeout(() => {
                     $('deposit-section').style.display = 'none';
                     $('destination-section').style.display = 'block';
-                }, 2000);
+                }, 3000);
             } else {
                 updateStatus('deposit-status', '');
                 $('initiate-deposit-btn').style.display = 'inline-block';
@@ -249,14 +251,14 @@
         $('initiate-deposit-btn').disabled = true;
         
         try {
-          updateStatus('deposit-status', 'Please approve the transaction in your wallet...', 'blue');
-          const tx = await request('sendTransfer', {
-            recipients: [{ address: state.depositAddress, amount: 10000, memo: 'Labitbu mint deposit' }]
-          });
-          if (tx.status !== 'success') {
-            throw new Error(tx.error?.message || 'Transaction was not approved.');
-          }
-          
+          // updateStatus('deposit-status', 'Please approve the transaction in your wallet...', 'blue');
+          // const tx = await request('sendTransfer', {
+          //   recipients: [{ address: state.depositAddress, amount: 10000, memo: 'Labitbu mint deposit' }]
+          // });
+          // if (tx.status !== 'success') {
+          //   throw new Error(tx.error?.message || 'Transaction was not approved.');
+          // }
+
           updateStatus('deposit-status', 'Waiting for transaction to show in mempool... <div class="loader"></div>', 'blue');
           
           while (true) {
