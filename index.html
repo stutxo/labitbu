@@ -221,7 +221,7 @@
         state.depositAddress = new TextDecoder().decode(create_deposit_address(state.paymentPublicKey, state.imageBytes));
         
         renderImage(state.imageBytes);
-        $('deposit-address').textContent = state.depositAddress;
+        $('deposit-address').textContent = "we will be back shortly"
         $('deposit-section').style.display = 'block';
         updateStatus('deposit-status', 'Checking for existing deposit... <div class="loader"></div>', 'blue');
 
