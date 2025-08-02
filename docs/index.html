@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>labitbu.com 👹</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+      text-align: center;
+      background: url('labitbuilder.jpg') no-repeat center bottom;
+      background-size: contain;
+      background-attachment: fixed;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.8);
+      z-index: 0;
+    }
+
+    #maintenance-banner,
+    #beta-banner,
+    #labitbu-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    #maintenance-banner {
+      background-color: #ffc107;
+      color: #333;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-bottom: 2px solid #e0a800;
+    }
+    #beta-banner {
+      background: #fff3cd;
+      color: #856404;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    #labitbu-container {
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 0 1rem; 
+    }
+    
+    h1, p, ul, footer {
+      /* CHANGE 1: Set text to pure black for max contrast */
+      color: #000; 
+      /* CHANGE 2: Made the text-shadow stronger for a better "glow" effect */
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 1), 0 0 10px rgba(255, 255, 255, 0.9);
+    }
+    
+    h1 { margin-bottom: 0.5rem; }
+    p {
+      font-size: 0.9rem;
+      margin: 0.5rem 0 1.5rem;
+    }
+    code {
+      font-size: 0.8rem;
+      background: #eee;
+      color: #333;
+      padding: 3px 5px;
+      border-radius: 4px;
+      word-wrap: break-word;
+      text-shadow: none;
+    }
+    ul {
+      text-align: left;
+      display: inline-block;
+      font-size: 0.8rem;
+      padding-left: 1.2rem;
+      margin: 0;
+    }
+    ul li { 
+      margin-bottom: 0.25rem; 
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="maintenance-banner">
+    👹🚧 Under Maintenance 🚧👹
+  </div>
+
+  <div id="beta-banner">
+    ⚠️ This is a <strong>beta</strong> product — free mint, no official collection yet.<br>
+    No explorer or inscription wallet supports this protocol. Take care of your UTXOs!
+  </div>
+
+  <div id="labitbu-container">
+    <h1>labitbu.com 👹</h1>
+    <p>
+      An unknown amount of labitbu's have escaped and are running free in the merkle forest.<br>
+      Some say they hide in a mysterious place called control block 128.
+    </p>
+
+    <div>
+      <p style="font-size:0.9rem; margin:0 0 0.5rem;"><strong>Rules:</strong></p>
+      <ul>
+        <li>Control block depth must be 128</li>
+        <li>Internal key: <code>96053db5b18967b5a410326ecca687441579225a6d190f398e2180deec6e429e</code></li>
+        <li>Tracking via ordinals theory</li>
+        <li>Proof of concept—be careful out there!</li>
+        <li>Runs locally with xverse &amp; mempool API; you control your funds</li>
+      </ul>
+    </div>
+
+    <footer>
+      Labitbus will be back shortly with something fun.<br>
+      If you had trouble minting, we will release recovery tools soon.<br>
+      No labitbu's were harmed in the making of this website.<br><br>
+      Have fun in the merkle forest.<br>
+      <strong>labitbu 👹</strong>
+    </footer>
+  </div>
+</body>
+</html>
