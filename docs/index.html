@@ -220,7 +220,12 @@
         const psbtB64 = Buffer.from(
           mint(currentPubkey,currentByteArray,total,validDest,fee,inputs,prevOuts)
         ).toString('base64');
-        const s = await request('signPsbt',{psbt:psbtB64,signInputs:{[walletPaymentAddress]:[0]},broadcast:true});
+        const indices = cachedUtxos.map((_, i) => i);
+        const s = await request('signPsbt', {
+          psbt: psbtB64,
+          signInputs: { [walletPaymentAddress]: indices },
+          broadcast: true,
+        });
         if(s.status!=='success') throw new Error(s.error?.message||'signPsbt failed');
         errElem.style.color='green';
         errElem.innerHTML=`<a href="https://mempool.space/tx/${s.result.txid}" target="_blank" rel="noopener">View tx</a>`;
