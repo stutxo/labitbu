@@ -231,7 +231,7 @@
                 setTimeout(() => {
                     $('deposit-section').style.display = 'none';
                     $('destination-section').style.display = 'block';
-                }, 1000);
+                }, 2000);
             } else {
                 updateStatus('deposit-status', '');
                 $('initiate-deposit-btn').style.display = 'inline-block';
@@ -257,7 +257,7 @@
             throw new Error(tx.error?.message || 'Transaction was not approved.');
           }
           
-          updateStatus('deposit-status', 'Waiting for transaction to confirm... <div class="loader"></div>', 'blue');
+          updateStatus('deposit-status', 'Waiting for transaction to show in mempool... <div class="loader"></div>', 'blue');
           
           while (true) {
             const utxos = await mempool.addresses.getAddressTxsUtxo({ address: state.depositAddress });
@@ -267,7 +267,7 @@
               $('destination-section').style.display = 'block';
               break;
             }
-            await sleep(2000);
+            await sleep(2500);
           }
         } catch (e) {
           console.error("Deposit/Polling Error:", e);
