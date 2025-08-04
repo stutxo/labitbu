@@ -1,7 +1,5 @@
 # labitbu
 
-### We will be back soon with something fun! <3 labitbu 👹
-
 This is a fun project inspired by our plebfi 2025 second place hackathon project! @jarolrod @luisschwab @PlumBuggle68 
 
 original hackathon project here
@@ -41,4 +39,34 @@ cli getrawtransaction "txid" 2 "blockhash" \
 | grep -o -i -m1 '52494646[0-9a-f]*57454250[0-9a-f]*' \
 | cut -c1-8192 \
 | xxd -r -p > labitbu.webp && open labitbu.webp
+
+## Setup
+
+If you want to run this locally you can serve the contents of the docs folder from a local webserver.
+
+```
+python3 -m http.server --directory docs 8080
+```
+
+## Deploy
+
+This site is hosted on github pages via the github.com/stutxo/lubitbu repo. The build script moves the comipled app to the /docs folder, which is used by github pages to serve the website.
+
+You only need to run the build script if the rust code is changed.
+
+## Dependencies 
+
+### Rust
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+### wasm-pack
+```
+cargo install wasm-pack
+```
+
+### Build
+```
+./build.sh
 ```
