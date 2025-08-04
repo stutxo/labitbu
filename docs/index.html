@@ -71,19 +71,49 @@
     ul li { 
       margin-bottom: 0.25rem; 
     }
+
     footer {
-      margin-top: 2rem;
-      font-size: 0.85rem;
-      line-height: 1.4;
+      margin-top: 2.5rem;
     }
+    
+    .footer-notes {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      max-width: 450px;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .footer-notes li {
+      position: relative;
+      padding-left: 2rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .footer-notes li::before {
+      content: '👹';
+      position: absolute;
+      left: 0;
+      top: -1px;
+      font-size: 1.1rem;
+    }
+
+    .footer-notes .sign-off {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 2rem;
+      padding-left: 0;
+    }
+    
+    .footer-notes .sign-off::before {
+      content: '';
+    }
+    
   </style>
 </head>
 <body>
-
-  <div id="beta-banner">
-    ⚠️ This is a <strong>beta</strong> product — free mint, no official collection yet.<br>
-    No explorer or inscription wallet supports this protocol. Take care of your UTXOs!
-  </div>
 
   <div id="labitbu-container">
     <h1>labitbu.com 👹</h1>
@@ -98,10 +128,23 @@
         <li>Control block depth must be 128</li>
         <li>Internal key: <code>96053db5b18967b5a410326ecca687441579225a6d190f398e2180deec6e429e</code></li>
         <li>Tracking via ordinals theory</li>
-        <li>Proof of concept—be careful out there!</li>
+        <li>Proof of concept, be careful out there!</li>
         <li>Runs locally with xverse &amp; mempool API; you control your funds</li>
       </ul>
     </div>
+
+    <footer>
+      <ul class="footer-notes">
+        <li>10k collection - the first 10k count</li>
+        <li>Duplicates count - we have a plan to deduplicate them</li>
+        <li>If you committed to a labitbu but couldn't sweep to reveal during the first 10k, we'll help bring them back from the dead - spooky labitbu 👻</li>
+        <li>Sleepies will wake up</li>
+        <li>10k+ can be labitfus</li>
+        <li>More surprises and fun planned</li>
+        <li class="sign-off">labitbu 👹</li>
+      </ul>
+    </footer>
+
   </div>
 </body>
 </html>
