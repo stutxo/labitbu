@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
   <title>labitbu.com 👹</title>
   <style>
+  :root {
+  color-scheme: light;
+  }
+  html, body {
+  touch-action: manipulation;
+  }
+
   .resources { text-align:center; margin:8px auto 16px; }
   .res {
     display:grid;
@@ -23,8 +30,18 @@
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
   }
   @media (max-width: 640px) {
-    .res { grid-template-columns: 1fr; }
-    .res dt { margin-top: 8px; }
+    body {
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    input, button {
+      max-width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    .mono-clip {
+      white-space: normal;
+    }
   }
 </style>
 </head>
@@ -35,11 +52,7 @@
 
 <section class="resources">
   <br/>
-  <br/>
-  <br/>
   <img src="labitboogie.webp" alt="labitbu image" style="max-width:200px; display:block; margin:8px auto;" />
-  <br/>
-  <br/>
   <br/>
   <dl class="res">
     <dt>labitbu sat index transaction</dt>
@@ -65,8 +78,8 @@
 
 <main style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:12px; margin-top:40px;">
   <p>If you have not yet swept from your mint address — you can recover here:</p>
-  <input id="dest" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-family:monospace; width:62ch;" placeholder="destination (taproot ordinals compatible address)" />
-  <button id="go" style="padding:10px 14px; border:0; border-radius:6px; cursor:pointer; background:#007bff; color:#fff; font-size:0.9rem;">Connect & Sweep</button>
+  <input id="dest" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-family:monospace; width:62ch;" placeholder="destination addr (bc1p ordinals compatible addr)" />
+  <button id="go" style="padding:10px 14px; border:0; border-radius:6px; cursor:pointer; background:#007bff; color:#fff; font-size:0.9rem;">Connect Xverse & Sweep</button>
   <div id="out" style="width:min(90vw,720px); font-family:monospace; font-size:0.9rem; color:#222; padding:10px; min-height:1.5em; text-align:left; border:none;"></div>
 </main>
 
@@ -122,69 +135,104 @@
     }
 
     $('go').onclick = async () => {
-      const btn = $('go');
-      try{
-        btn.disabled = true;
-        print('connecting wallet…');
+    const btn = $('go');
 
-        const wc = await request('wallet_connect', null);
-        if (wc.status!=='success') throw new Error('wallet connect failed');
-        const pay = wc.result.addresses.find(a=>a.purpose===AddressPurpose.Payment);
-        if (!pay) throw new Error('no Taproot payment address found');
-        const paymentPubKeyHex = pay.publicKey.slice(2);
-
-        const dest = $('dest').value.trim();
-        if (!isTaproot(dest)) return print('invalid destination: must be a taproot ordinals compatible address');
-
-        print('searching for a spendable mint address…');
-        const choice = await findSpendable(paymentPubKeyHex);
-        if (!choice) return print('no spendable UTXO found for your mint address. try a different xverse account.');
-
-        const { imageBytes, depositAddr, utxos } = choice;
-        const displayAddr = `<span class="addr">${depositAddr}</span>`;
-        print(`attempting to sweep from: ${displayAddr}`, 'building transaction…');
-
-        const prevOuts = await Promise.all(utxos.map(async ({txid,vout})=>{
-          const tx = await mempool.transactions.getTx({ txid });
-          return { value:Number(tx.vout[vout].value), script_pubkey: tx.vout[vout].scriptpubkey };
-        }));
-        const totalIn = utxos.reduce((n,u)=>n+BigInt(u.value),0n);
-        const feeRate  = (await mempool.fees.getFeesRecommended()).fastestFee;
-        const vbytes   = 1200n;
-        const fee      = BigInt(Math.ceil(feeRate)) * vbytes;
-        if (totalIn <= fee)  throw new Error('deposit is not enough to cover fee');
-        if (totalIn - fee < 330n) throw new Error('output would be dust');
-
-        const inputs = utxos.map(u=>({ previous_output:`${u.txid}:${u.vout}`, sequence:0xFFFFFFFD, script_sig:'', witness:[] }));
-        const psbtBytes  = wasm.mint(paymentPubKeyHex, imageBytes, totalIn, dest, fee, inputs, prevOuts);
-        const psbtBase64 = Buffer.from(psbtBytes).toString('base64');
-
-        print(`attempting to sweep from: ${displayAddr}`, 'please approve in your wallet…');
-        const sign = await request('signPsbt', {
-          psbt: psbtBase64,
-          signInputs: { [pay.address]: utxos.map((_,i)=>i) },
-          broadcast: true
-        });
-        if (sign.status!=='success') throw new Error(sign.error?.message || 'sign/broadcast failed');
-
-        const txid = sign.result.txid;
-        print(`attempting to sweep from: ${displayAddr}`, `swept! tx: <a href="https://mempool.space/tx/${txid}" target="_blank">${txid}</a>`);
-
-        btn.disabled = true;
-        btn.textContent = "Swept ✅";
-        btn.style.background = "#ccc";
-        btn.style.cursor = "not-allowed";
-        btn.style.color = "#666";
-        return;
-
-      } catch(e) {
-        print(e?.message || String(e));
-        btn.disabled = false;
-        btn.style.background = "#007bff";
-        btn.style.color = "#fff";
-        btn.style.cursor = "pointer";
-      }
+    const setBusy = () => {
+      btn.disabled = true;
+      btn.textContent = "Sweeping…";
+      btn.style.background = "#6c757d";
+      btn.style.color = "#fff";
+      btn.style.cursor = "not-allowed";
     };
+    const setIdle = () => {
+      btn.disabled = false;
+      btn.textContent = "Connect Xverse & Sweep";
+      btn.style.background = "#007bff";
+      btn.style.color = "#fff";
+      btn.style.cursor = "pointer";
+    };
+    const setDone = () => {
+      btn.disabled = true;
+      btn.textContent = "Swept ✅";
+      btn.style.background = "#ccc";
+      btn.style.color = "#666";
+      btn.style.cursor = "not-allowed";
+    };
+
+    try {
+      const dest = $('dest').value.trim();
+      if (!isTaproot(dest)) {
+        print('invalid destination: must be a taproot ordinals compatible (bc1p)');
+        setIdle();
+        return;
+      }
+
+      setBusy();
+      print('connecting wallet…');
+
+      const wc = await request('wallet_connect', null);
+      if (wc.status !== 'success') {
+        print('wallet connect failed');
+        setIdle();
+        return;
+      }
+
+      const pay = wc.result.addresses.find(a => a.purpose === AddressPurpose.Payment);
+      if (!pay) {
+        print('no Taproot payment address found');
+        setIdle();
+        return;
+      }
+      const paymentPubKeyHex = pay.publicKey.slice(2);
+
+      print('searching for a spendable mint address…');
+      const choice = await findSpendable(paymentPubKeyHex);
+      if (!choice) {
+        print('no spendable UTXO found for your mint address. try a different xverse account.');
+        setIdle();
+        return;
+      }
+
+      const { imageBytes, depositAddr, utxos } = choice;
+      const displayAddr = `<span class="addr">${depositAddr}</span>`;
+      print(`attempting to sweep from: ${displayAddr}`, 'building transaction…');
+
+      const prevOuts = await Promise.all(utxos.map(async ({txid,vout})=>{
+        const tx = await mempool.transactions.getTx({ txid });
+        return { value:Number(tx.vout[vout].value), script_pubkey: tx.vout[vout].scriptpubkey };
+      }));
+      const totalIn = utxos.reduce((n,u)=>n+BigInt(u.value),0n);
+      const feeRate  = (await mempool.fees.getFeesRecommended()).fastestFee;
+      const vbytes   = 1200n;
+      const fee      = BigInt(Math.ceil(feeRate)) * vbytes;
+      if (totalIn <= fee)  { print('deposit is not enough to cover fee, wait for network fee to decrease'); setIdle(); return; }
+      if (totalIn - fee < 330n) { print('output would be dust'); setIdle(); return; }
+
+      const inputs = utxos.map(u=>({ previous_output:`${u.txid}:${u.vout}`, sequence:0xFFFFFFFD, script_sig:'', witness:[] }));
+      const psbtBytes  = wasm.mint(paymentPubKeyHex, imageBytes, totalIn, dest, fee, inputs, prevOuts);
+      const psbtBase64 = Buffer.from(psbtBytes).toString('base64');
+
+      print(`attempting to sweep from: ${displayAddr}`, 'please approve in your wallet…');
+      const sign = await request('signPsbt', {
+        psbt: psbtBase64,
+        signInputs: { [pay.address]: utxos.map((_,i)=>i) },
+        broadcast: true
+      });
+      if (sign.status!=='success') {
+        print(sign.error?.message || 'sign/broadcast failed');
+        setIdle();
+        return;
+      }
+
+      const txid = sign.result.txid;
+      print(`attempting to sweep from: ${displayAddr}`, `swept! tx: <a href="https://mempool.space/tx/${txid}" target="_blank">${txid}</a>`);
+      setDone();
+
+    } catch (e) {
+      print(e?.message || String(e));
+      setIdle();
+    }
+  };
   </script>
 </body>
 </html>
