@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>labitbu.com 👹</title>
+  <style>
+  .resources { text-align:center; margin:8px auto 16px; }
+  .res {
+    display:grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 12px;
+    max-width: 720px;
+    margin: 0 auto;
+    text-align:left;
+  }
+  .res dt { font-weight:600; color:#222; }
+  .res dd { margin:0; }
+  .mono-clip {
+    font-family: monospace;
+    display:inline-block;
+    max-width: 100%;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  @media (max-width: 640px) {
+    .res { grid-template-columns: 1fr; }
+    .res dt { margin-top: 8px; }
+  }
+</style>
+</head>
+<body>
+<header style="text-align:center; margin-top:12px;">
+  <h1>labitbu.com 👹</h1>
+</header>
+
+<section class="resources">
+  <br/>
+  <br/>
+  <br/>
+  <img src="labitboogie.webp" alt="labitbu image" style="max-width:200px; display:block; margin:8px auto;" />
+  <br/>
+  <br/>
+  <br/>
+  <dl class="res">
+    <dt>labitbu sat index transaction</dt>
+    <dd>
+      <a href="https://mempool.space/tx/f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe" target="_blank">
+        <span class="mono-clip">f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe</span>
+      </a>
+    </dd>
+
+    <dt>index/trait repo (full DB & images)</dt>
+    <dd><a href="https://github.com/labitbu/indexooooor" target="_blank">indexooooor</a></dd>
+
+    <dt>make your own labitbu</dt>
+    <dd><a href="https://github.com/stutxo/labitbu-maker" target="_blank">labitbu-maker</a></dd>
+
+    <dt>pathologies repo (ord fork)</dt>
+    <dd><a href="https://github.com/labitbu/pathologies" target="_blank">pathologies</a></dd>
+
+    <dt>awesome labitbu resources</dt>
+    <dd><a href="https://github.com/rot13maxi/awesome-labitbu" target="_blank">awesome-labitbu</a></dd>
+  </dl>
+</section>
+
+<main style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:12px; margin-top:40px;">
+  <p>If you have not yet swept from your mint address — you can recover here:</p>
+  <input id="dest" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-family:monospace; width:62ch;" placeholder="destination (taproot ordinals compatible address bc1p)" />
+  <button id="go" style="padding:10px 14px; border:0; border-radius:6px; cursor:pointer; background:#007bff; color:#fff; font-size:0.9rem;">Connect & Sweep</button>
+  <div id="out" style="width:min(90vw,720px); font-family:monospace; font-size:0.9rem; color:#222; padding:10px; min-height:1.5em; text-align:left; border:none;"></div>
+</main>
+
+
+  <script type="module">
+    const $ = id => document.getElementById(id);
+    const print = (...lines) => { $('out').innerHTML = lines.filter(Boolean).join('<br>'); };
+    const [{ request, AddressPurpose }, wasm, mempoolJS, { Buffer }, { bech32m }] = await Promise.all([
+      import('https://esm.sh/sats-connect'),
+      import('./pkg/labitbu.js'),
+      import('https://esm.sh/@mempool/mempool.js'),
+      import('https://esm.sh/buffer'),
+      import('https://esm.sh/bech32@2.0.0'),
+    ]);
+    await wasm.default();
+    const mempool = mempoolJS.default({ hostname:'mempool.space' }).bitcoin;
+
+    function isTaproot(addr){
+      try {
+        const dec = bech32m.decode(addr);
+        if (!['bc','tb'].includes(dec.prefix)) return false;
+        const v = dec.words[0];
+        const prog = bech32m.fromWords(dec.words.slice(1));
+        return v===1 && prog.length===32;
+      } catch { return false; }
+    }
+    const hexToBytes = hex => Uint8Array.from(hex.match(/.{1,2}/g).map(b=>parseInt(b,16)));
+    const valuesInOrder = obj => Object.values(obj).map(hexToBytes);
+
+    const [sleepyJson, legacyJson, otherSleepyJson] = await Promise.all([
+      fetch('/lasnoozesnooze.json').then(r=>r.json()),
+      fetch('/labitbu-traits.json').then(r=>r.json()),
+      fetch('/labitbu-traits-sleepy.json').then(r=>r.json()).catch(()=>null),
+    ]);
+    const loaders = [
+      async pk => ({ label:'sleepy', imageBytes: wasm.generate_labitbu_bytes(pk, valuesInOrder(sleepyJson.Lasnoozesnooze), valuesInOrder(sleepyJson.traits)) }),
+      async pk => ({ label:'legacy', imageBytes: wasm.generate_labitbu_bytes(pk, valuesInOrder(legacyJson.labitbus), valuesInOrder(legacyJson.accessories)) }),
+      async pk => otherSleepyJson && ({ label:'sleepy2', imageBytes: wasm.generate_labitbu_bytes_sleepy(pk, valuesInOrder(otherSleepyJson.labitbus), valuesInOrder(otherSleepyJson.accessories)) }),
+    ].filter(Boolean);
+
+    async function findSpendable(paymentPubKeyHex){
+      for (const mk of loaders){
+        try{
+          const res = await mk(paymentPubKeyHex);
+          if (!res) continue;
+          const depositAddr = new TextDecoder().decode(wasm.create_deposit_address(paymentPubKeyHex, res.imageBytes));
+          console.log('depositAddr', depositAddr);
+          const utxos = await mempool.addresses.getAddressTxsUtxo({ address: depositAddr });
+          if (utxos?.length) return { ...res, depositAddr, utxos };
+        }catch{}
+      }
+      return null;
+    }
+
+    $('go').onclick = async () => {
+      const btn = $('go');
+      try{
+        btn.disabled = true;
+        print('connecting wallet…');
+
+        const wc = await request('wallet_connect', null);
+        if (wc.status!=='success') throw new Error('wallet connect failed');
+        const pay = wc.result.addresses.find(a=>a.purpose===AddressPurpose.Payment);
+        if (!pay) throw new Error('no Taproot payment address found');
+        const paymentPubKeyHex = pay.publicKey.slice(2);
+
+        const dest = $('dest').value.trim();
+        if (!isTaproot(dest)) return print('invalid destination: must be a taproot ordinals compatible (bc1p)');
+
+        print('searching for a spendable mint address…');
+        const choice = await findSpendable(paymentPubKeyHex);
+        if (!choice) return print('no spendable UTXO found for your mint address. try a different xverse account.');
+
+        const { imageBytes, depositAddr, utxos } = choice;
+        const displayAddr = `<span class="addr">${depositAddr}</span>`;
+        print(`attempting to sweep from: ${displayAddr}`, 'building transaction…');
+
+        const prevOuts = await Promise.all(utxos.map(async ({txid,vout})=>{
+          const tx = await mempool.transactions.getTx({ txid });
+          return { value:Number(tx.vout[vout].value), script_pubkey: tx.vout[vout].scriptpubkey };
+        }));
+        const totalIn = utxos.reduce((n,u)=>n+BigInt(u.value),0n);
+        const feeRate  = (await mempool.fees.getFeesRecommended()).fastestFee;
+        const vbytes   = 1200n;
+        const fee      = BigInt(Math.ceil(feeRate)) * vbytes;
+        if (totalIn <= fee)  throw new Error('deposit is not enough to cover fee');
+        if (totalIn - fee < 330n) throw new Error('output would be dust');
+
+        const inputs = utxos.map(u=>({ previous_output:`${u.txid}:${u.vout}`, sequence:0xFFFFFFFD, script_sig:'', witness:[] }));
+        const psbtBytes  = wasm.mint(paymentPubKeyHex, imageBytes, totalIn, dest, fee, inputs, prevOuts);
+        const psbtBase64 = Buffer.from(psbtBytes).toString('base64');
+
+        print(`attempting to sweep from: ${displayAddr}`, 'please approve in your wallet…');
+        const sign = await request('signPsbt', {
+          psbt: psbtBase64,
+          signInputs: { [pay.address]: utxos.map((_,i)=>i) },
+          broadcast: true
+        });
+        if (sign.status!=='success') throw new Error(sign.error?.message || 'sign/broadcast failed');
+
+        const txid = sign.result.txid;
+        print(`attempting to sweep from: ${displayAddr}`, `swept! tx: <a href="https://mempool.space/tx/${txid}" target="_blank">${txid}</a>`);
+
+        btn.disabled = true;
+        btn.textContent = "Swept ✅";
+        btn.style.background = "#ccc";
+        btn.style.cursor = "not-allowed";
+        btn.style.color = "#666";
+        return;
+
+      } catch(e) {
+        print(e?.message || String(e));
+        btn.disabled = false;
+        btn.style.background = "#007bff";
+        btn.style.color = "#fff";
+        btn.style.cursor = "pointer";
+      }
+    };
+  </script>
+</body>
+</html>
