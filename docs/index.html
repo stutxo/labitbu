@@ -8,47 +8,214 @@
   <meta name="theme-color" content="#ffffff">
   <title>labitbu.com 👹</title>
   <style>
-  :root {
-  color-scheme: light;
-  }
-  html, body {
-  touch-action: manipulation;
-  background: #fff;
-  color: #111;
-  }
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      
+      :root {
+          color-scheme: light;
+      }
+      
+      html, body {
+          touch-action: manipulation;
+          background: #fff;
+          color: #111;
+      }
+      
+      body {
+          background: #f5f5f5;
+          font-family: Arial, sans-serif;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px;
+          color: #333;
+      }
+      
+      .game-container {
+          background: white;
+          border-radius: 8px;
+          padding: 20px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          border: 1px solid #ddd;
+      }
+      
+      .game-header {
+          text-align: center;
+          margin-bottom: 20px;
+      }
+      
+      h1 {
+          font-size: 1.8em;
+          font-weight: bold;
+          margin-bottom: 8px;
+          color: #333;
+      }
+      
+      .subtitle {
+          font-size: 0.9em;
+          color: #666;
+          margin-bottom: 15px;
+      }
+      
+      #game {
+          border: 2px solid #ccc;
+          border-radius: 4px;
+          background-color: white;
+          display: block;
+          margin: 0 auto;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      .game-stats {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+          gap: 10px;
+          margin-top: 15px;
+          max-width: 500px;
+      }
+      
+      .stat {
+          background: #f8f8f8;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          padding: 10px;
+          text-align: center;
+      }
+      
+      .stat-label {
+          font-size: 0.7em;
+          color: #666;
+          margin-bottom: 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+      }
+      
+      .stat-value {
+          font-size: 1.2em;
+          font-weight: bold;
+          color: #333;
+      }
+      
+      .high-score {
+          background: #e8e8e8;
+          border: 2px solid #999;
+      }
+      
+      .controls {
+          margin-top: 15px;
+          text-align: center;
+      }
+      
+      .control-info {
+          font-size: 0.8em;
+          color: #666;
+          margin-bottom: 10px;
+      }
+      
+      #restart-btn {
+          background: #555;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          font-size: 14px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background 0.2s ease;
+          font-weight: bold;
+      }
+      
+      #restart-btn:hover {
+          background: #333;
+      }
+      
+      .wallet-section {
+          margin-top: 15px;
+          text-align: center;
+          padding: 10px;
+          background: #f8f8f8;
+          border-radius: 4px;
+          border: 1px solid #ddd;
+      }
+      
+      .wallet-info {
+          font-size: 0.8em;
+          color: #666;
+          margin-bottom: 8px;
+      }
+      
+      #connect-wallet-btn {
+          background: #007bff;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          font-size: 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background 0.2s ease;
+          font-weight: bold;
+      }
+      
+      #connect-wallet-btn:hover {
+          background: #0056b3;
+      }
+      
+      .resources { 
+          text-align:center; 
+          margin:8px auto 16px; 
+      }
+      
+      .res {
+          display:grid;
+          grid-template-columns: max-content 1fr;
+          gap: 6px 12px;
+          max-width: 720px;
+          margin: 0 auto;
+          text-align:left;
+      }
+      
+      .res dt { 
+          font-weight:600; 
+          color:#222; 
+      }
+      
+      .res dd { 
+          margin:0; 
+      }
+      
+      .mono-clip {
+          font-family: monospace;
+          display:inline-block;
+          max-width: 100%;
+          overflow:hidden; 
+          text-overflow:ellipsis; 
+          white-space:nowrap;
+      }
+      
+      @media (max-width: 640px) {
+          body {
+              word-break: break-word;
+              overflow-wrap: anywhere;
+          }
+          input, button {
+              max-width: 100%;
+              box-sizing: border-box;
+              font-size: 16px;
+          }
+          .mono-clip {
+              white-space: normal;
+          }
+      }
+  </style>
+  <!-- Sats Connect for Bitcoin wallet integration -->
+  <script src="https://unpkg.com/sats-connect@latest/dist/index.js"></script>
+  <!-- WebP Extractor for Bitcoin inscriptions -->
+  <script src="webp-extractor.js"></script>
 
-  .resources { text-align:center; margin:8px auto 16px; }
-  .res {
-    display:grid;
-    grid-template-columns: max-content 1fr;
-    gap: 6px 12px;
-    max-width: 720px;
-    margin: 0 auto;
-    text-align:left;
-  }
-  .res dt { font-weight:600; color:#222; }
-  .res dd { margin:0; }
-  .mono-clip {
-    font-family: monospace;
-    display:inline-block;
-    max-width: 100%;
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  }
-  @media (max-width: 640px) {
-    body {
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-    input, button {
-      max-width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-    .mono-clip {
-      white-space: normal;
-    }
-  }
-</style>
+  <script type="module" src="labitbu-runner.js"></script>
 </head>
 <body>
 <header style="text-align:center; margin-top:12px;">
@@ -81,163 +248,58 @@
   </dl>
 </section>
 
-<main style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:12px; margin-top:40px;">
-  <p>If you have not yet swept from your mint address — you can recover here:</p>
-  <input id="dest" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-family:monospace; width:62ch;" placeholder="destination addr (bc1p ordinals compatible addr)" />
-  <button id="go" style="padding:10px 14px; border:0; border-radius:6px; cursor:pointer; background:#007bff; color:#fff; font-size:0.9rem;">Connect Xverse & Sweep</button>
-  <div id="out" style="width:min(90vw,720px); font-family:monospace; font-size:0.9rem; color:#222; padding:10px; min-height:1.5em; text-align:left; border:none;"></div>
-</main>
+<section>
+    <div class="game-container">
+      <div class="game-header">
+          <h1>Labitbu Runner</h1>
+          <p class="subtitle">Jump, dodge, and survive!</p>
+          <p class="subtitle">Connect Xverse to see your own labitbu in action!</p>
+      </div>
+      
+      <canvas id="game"></canvas>
+      
+      <div class="game-stats">
+          <div class="stat">
+              <div class="stat-label">Speed</div>
+              <div class="stat-value" id="speed">0.00</div>
+          </div>
+          <div class="stat">
+              <div class="stat-label">Distance</div>
+              <div class="stat-value" id="distance">0</div>
+          </div>
+          <div class="stat">
+              <div class="stat-label">Score</div>
+              <div class="stat-value" id="score">0</div>
+          </div>
+          <div class="stat high-score">
+              <div class="stat-label">High Score</div>
+              <div class="stat-value" id="high-score">0</div>
+          </div>
+      </div>
+      
+      <div class="controls">
+          <div class="control-info">
+              <strong>Controls:</strong> SPACE / W / ↑ to jump | S / ↓ to fast fall
+          </div>
+          <button id="restart-btn">Restart Game</button>
+      </div>
+      
+      <div class="wallet-section">
+          <div class="wallet-info">
+              <strong>Wallet:</strong> <span id="wallet-status">Not connected</span>
+          </div>
+          <button id="connect-wallet-btn">Connect Xverse Wallet</button>
+          <button id="load-labitbu-btn" style="display: none; background: #28a745; color: white; border: none; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-weight: bold;">Load Labitbu</button>
+          <div style="margin-top: 8px;">
+            <!--
+              <input type="text" id="test-address-input" placeholder="Enter address for testing (optional)" style="width: 100%; padding: 4px; font-size: 11px; border: 1px solid #ddd; border-radius: 3px; margin-bottom: 4px;">
+              <small style="color: #666; font-size: 10px;">Leave empty to use connected wallet address</small>
+            -->
+          </div>
+      </div>
+  </div>
 
-
-  <script type="module">
-    const $ = id => document.getElementById(id);
-    const print = (...lines) => { $('out').innerHTML = lines.filter(Boolean).join('<br>'); };
-    const [{ request, AddressPurpose }, wasm, mempoolJS, { Buffer }, { bech32m }] = await Promise.all([
-      import('https://esm.sh/sats-connect'),
-      import('./pkg/labitbu.js'),
-      import('https://esm.sh/@mempool/mempool.js'),
-      import('https://esm.sh/buffer'),
-      import('https://esm.sh/bech32@2.0.0'),
-    ]);
-    await wasm.default();
-    const mempool = mempoolJS.default({ hostname:'mempool.space' }).bitcoin;
-
-    function isTaproot(addr){
-      try {
-        const dec = bech32m.decode(addr);
-        if (!['bc','tb'].includes(dec.prefix)) return false;
-        const v = dec.words[0];
-        const prog = bech32m.fromWords(dec.words.slice(1));
-        return v===1 && prog.length===32;
-      } catch { return false; }
-    }
-    const hexToBytes = hex => Uint8Array.from(hex.match(/.{1,2}/g).map(b=>parseInt(b,16)));
-    const valuesInOrder = obj => Object.values(obj).map(hexToBytes);
-
-    const [sleepyJson, legacyJson, otherSleepyJson] = await Promise.all([
-      fetch('/lasnoozesnooze.json').then(r=>r.json()),
-      fetch('/labitbu-traits.json').then(r=>r.json()),
-      fetch('/labitbu-traits-sleepy.json').then(r=>r.json()).catch(()=>null),
-    ]);
-    const loaders = [
-      async pk => ({ label:'sleepy', imageBytes: wasm.generate_labitbu_bytes(pk, valuesInOrder(sleepyJson.Lasnoozesnooze), valuesInOrder(sleepyJson.traits)) }),
-      async pk => ({ label:'legacy', imageBytes: wasm.generate_labitbu_bytes(pk, valuesInOrder(legacyJson.labitbus), valuesInOrder(legacyJson.accessories)) }),
-      async pk => otherSleepyJson && ({ label:'sleepy2', imageBytes: wasm.generate_labitbu_bytes_sleepy(pk, valuesInOrder(otherSleepyJson.labitbus), valuesInOrder(otherSleepyJson.accessories)) }),
-    ].filter(Boolean);
-
-    async function findSpendable(paymentPubKeyHex){
-      for (const mk of loaders){
-        try{
-          const res = await mk(paymentPubKeyHex);
-          if (!res) continue;
-          const depositAddr = new TextDecoder().decode(wasm.create_deposit_address(paymentPubKeyHex, res.imageBytes));
-          console.log('depositAddr', depositAddr);
-          const utxos = await mempool.addresses.getAddressTxsUtxo({ address: depositAddr });
-          if (utxos?.length) return { ...res, depositAddr, utxos };
-        }catch{}
-      }
-      return null;
-    }
-
-    $('go').onclick = async () => {
-    const btn = $('go');
-
-    const setBusy = () => {
-      btn.disabled = true;
-      btn.textContent = "Sweeping…";
-      btn.style.background = "#6c757d";
-      btn.style.color = "#fff";
-      btn.style.cursor = "not-allowed";
-    };
-    const setIdle = () => {
-      btn.disabled = false;
-      btn.textContent = "Connect Xverse & Sweep";
-      btn.style.background = "#007bff";
-      btn.style.color = "#fff";
-      btn.style.cursor = "pointer";
-    };
-    const setDone = () => {
-      btn.disabled = true;
-      btn.textContent = "Swept ✅";
-      btn.style.background = "#ccc";
-      btn.style.color = "#666";
-      btn.style.cursor = "not-allowed";
-    };
-
-    try {
-      const dest = $('dest').value.trim();
-      if (!isTaproot(dest)) {
-        print('invalid destination: must be a taproot ordinals compatible (bc1p)');
-        setIdle();
-        return;
-      }
-
-      setBusy();
-      print('connecting wallet…');
-
-      const wc = await request('wallet_connect', null);
-      if (wc.status !== 'success') {
-        print('wallet connect failed');
-        setIdle();
-        return;
-      }
-
-      const pay = wc.result.addresses.find(a => a.purpose === AddressPurpose.Payment);
-      if (!pay) {
-        print('no Taproot payment address found');
-        setIdle();
-        return;
-      }
-      const paymentPubKeyHex = pay.publicKey.slice(2);
-
-      print('searching for a spendable mint address…');
-      const choice = await findSpendable(paymentPubKeyHex);
-      if (!choice) {
-        print('no spendable UTXO found for your mint address. try a different xverse account.');
-        setIdle();
-        return;
-      }
-
-      const { imageBytes, depositAddr, utxos } = choice;
-      const displayAddr = `<span class="addr">${depositAddr}</span>`;
-      print(`attempting to sweep from: ${displayAddr}`, 'building transaction…');
-
-      const prevOuts = await Promise.all(utxos.map(async ({txid,vout})=>{
-        const tx = await mempool.transactions.getTx({ txid });
-        return { value:Number(tx.vout[vout].value), script_pubkey: tx.vout[vout].scriptpubkey };
-      }));
-      const totalIn = utxos.reduce((n,u)=>n+BigInt(u.value),0n);
-      const feeRate  = (await mempool.fees.getFeesRecommended()).fastestFee;
-      const vbytes   = 1200n;
-      const fee      = BigInt(Math.ceil(feeRate)) * vbytes;
-      if (totalIn <= fee)  { print('deposit is not enough to cover fee, wait for network fee to decrease'); setIdle(); return; }
-      if (totalIn - fee < 330n) { print('output would be dust'); setIdle(); return; }
-
-      const inputs = utxos.map(u=>({ previous_output:`${u.txid}:${u.vout}`, sequence:0xFFFFFFFD, script_sig:'', witness:[] }));
-      const psbtBytes  = wasm.mint(paymentPubKeyHex, imageBytes, totalIn, dest, fee, inputs, prevOuts);
-      const psbtBase64 = Buffer.from(psbtBytes).toString('base64');
-
-      print(`attempting to sweep from: ${displayAddr}`, 'please approve in your wallet…');
-      const sign = await request('signPsbt', {
-        psbt: psbtBase64,
-        signInputs: { [pay.address]: utxos.map((_,i)=>i) },
-        broadcast: true
-      });
-      if (sign.status!=='success') {
-        print(sign.error?.message || 'sign/broadcast failed');
-        setIdle();
-        return;
-      }
-
-      const txid = sign.result.txid;
-      print(`attempting to sweep from: ${displayAddr}`, `swept! tx: <a href="https://mempool.space/tx/${txid}" target="_blank">${txid}</a>`);
-      setDone();
-
-    } catch (e) {
-      print(e?.message || String(e));
-      setIdle();
-    }
-  };
-  </script>
+  <script src="labitbu-runner.js"></script>
+</section>
 </body>
 </html>
