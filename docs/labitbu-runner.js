@@ -7,26 +7,46 @@ let labitbuImages = [];
 // Connect to Xverse wallet using Sats Connect
 
 let request, AddressPurpose;
-
-(async () => {
-    const module = await import('https://esm.sh/sats-connect');
-    request = module.request;
-    AddressPurpose = module.AddressPurpose;
+let isConnecting = false;
+let satsConnectReadyPromise = (async () => {
+    try {
+        const module = await import('https://esm.sh/sats-connect');
+        request = module.request;
+        AddressPurpose = module.AddressPurpose;
+        console.log('Sats Connect module loaded successfully');
+    } catch (err) {
+        console.error('Failed to load Sats Connect module:', err);
+    }
 })();
 
 
 async function connectXverseWallet() {
+    if (isConnecting) {
+        return;
+    }
+    isConnecting = true;
+
+    const connectBtn = document.getElementById('connect-wallet-btn');
+    if (connectBtn) {
+        connectBtn.disabled = true;
+        connectBtn.textContent = 'Connecting...';
+        connectBtn.style.background = '#6c757d';
+    }
+
     try {
-        const response = await request('getAddresses', {
-            purposes: [AddressPurpose.Payment, AddressPurpose.Ordinals],
-            message: 'Connect to Labitbu Runner Game'
-        });
+        await satsConnectReadyPromise;
+        if (!request || !AddressPurpose) {
+            throw new Error('Wallet module not loaded. Please refresh and try again.');
+        }
+        const response = await request('wallet_connect', null);
         
         if (response.status === 'success') {
-            const paymentAddressInfo = response.result.addresses.find(a => a.purpose === AddressPurpose.Payment);
-            if (paymentAddressInfo) {
-                playerWallet = paymentAddressInfo.address;
-                console.log('Connected to Xverse wallet:', playerWallet);
+            const ordinalsAddressInfo = response.result.addresses.find(a => a.purpose === AddressPurpose.Ordinals);
+            const paymentAddressInfo  = response.result.addresses.find(a => a.purpose === AddressPurpose.Payment);
+            const chosen = ordinalsAddressInfo || paymentAddressInfo;
+            if (chosen) {
+                playerWallet = chosen.address;
+                console.log('Connected to Xverse wallet (chosen):', playerWallet, 'purpose:', ordinalsAddressInfo ? 'Ordinals' : 'Payment');
                 
                 // Update UI
                 const walletStatus = document.getElementById('wallet-status');
@@ -35,7 +55,6 @@ async function connectXverseWallet() {
                     walletStatus.style.color = '#28a745';
                 }
                 
-                const connectBtn = document.getElementById('connect-wallet-btn');
                 if (connectBtn) {
                     connectBtn.textContent = 'Wallet Connected';
                     connectBtn.disabled = true;
@@ -48,16 +67,24 @@ async function connectXverseWallet() {
                     loadLabitbuBtn.style.display = 'inline-block';
                 }
             } else {
-                console.error('No payment address found');
-                alert('No payment address found in wallet response');
+                console.error('No ordinals or payment address found');
+                alert('No ordinals or payment address found in wallet response');
             }
         } else {
             console.error('Connection failed:', response.error);
-            alert('Connection failed: ' + (response.error ? response.error.message : 'Unknown error'));
+            const msg = response?.error?.message || 'Unknown error';
+            alert('Connection failed: ' + msg + '\n\nTips:\n- Approve the connection in the Xverse popup.\n- If you see code -32002, a request is already pending—close or finish the existing wallet prompt.\n- If previously denied, open Xverse → Settings → Connected apps → remove this site, then retry.\n- Ensure only one wallet extension is active.\n- Use a secure context (https or http://localhost).\n- This app expects Mainnet (bc1p...) addresses.');
         }
     } catch (err) {
         console.error('Wallet connection error:', err);
         alert('Wallet connection failed: ' + (err && err.message ? err.message : err));
+    } finally {
+        isConnecting = false;
+        if (!playerWallet && connectBtn) {
+            connectBtn.disabled = false;
+            connectBtn.textContent = 'Connect Wallet';
+            connectBtn.style.background = '';
+        }
     }
 }
 
@@ -271,9 +298,17 @@ function SelectLabitbu(){
 
         card.appendChild(img);
         card.addEventListener('click', () => {
-            playerImg.src = url;
-            // optional feedback
-            try { console.log('Selected Labitbu:', url); } catch(_) {}
+            try { console.log('Selected Labitbu URL:', url); } catch(_) {}
+            const nextImg = new Image();
+            // nextImg.crossOrigin = 'anonymous'; // not required for blob/object URLs, safe to leave commented
+            nextImg.onload = () => {
+                try { console.log('Labitbu image loaded', nextImg.width, nextImg.height); } catch(_) {}
+                playerImg = nextImg;
+            };
+            nextImg.onerror = (e) => {
+                try { console.error('Failed to load selected Labitbu image', e); } catch(_) {}
+            };
+            nextImg.src = url;
             overlay.remove();
         });
 
@@ -670,10 +705,6 @@ function checkImagesLoaded() {
 }
 
 function gameOver() {
-    console.log('Game Over!');
-    console.log(`🎮 Game Over! Final Score: ${Math.floor(score)}`);
-    console.log(`📏 Distance Traveled: ${Math.floor(distanceTraveled)}`);
-    console.log(`⚡ Final Speed: ${background.speed.toFixed(2)}`);
     
     // Check for new high score
     const currentScore = Math.floor(score);
