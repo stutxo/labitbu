@@ -4,10 +4,22 @@
 let playerWallet = null;
 
 let labitbuImages = [];
+
+let gameState = "mainmenu";
+let selectedLabitbu = null; // Store the selected labitbu image
+
+// Game state management
+const GAME_STATES = {
+    MAIN_MENU: "mainmenu",
+    GAME: "game", 
+    DEATH_SCREEN: "deathscreen"
+};
+
 // Connect to Xverse wallet using Sats Connect
 
 let request, AddressPurpose;
 let isConnecting = false;
+let isLoadingLabitbu = false;
 let satsConnectReadyPromise = (async () => {
     try {
         const module = await import('https://esm.sh/sats-connect');
@@ -90,64 +102,79 @@ async function connectXverseWallet() {
 
 // Load Labitbu function
 async function loadLabitbu() {
-
-    let satNumbers = [];
-    let labitbuMintTxid = [];
-    // Reset previously extracted images for a fresh selection
-    labitbuImages = [];
-
-    let address = '';
-    let testAddressInput = document.getElementById('test-address-input');
-    if (testAddressInput && testAddressInput.value.trim()) {
-        address = testAddressInput.value.trim();
-    } else if (typeof playerWallet === 'string' && playerWallet.length > 0) {
-        address = playerWallet;
-    } else {
-        alert('No address found. Please connect your wallet or enter an address.');
+    if (isLoadingLabitbu) {
         return;
     }
-    // Fetch the outputs from thord.wizards.art
-    let outputs = [];
+    
+    // Check if selection overlay is open
+    const existingOverlay = document.getElementById('labitbu-select-overlay');
+    if (existingOverlay) {
+        alert('Please close the Labitbu selection screen first.');
+        return;
+    }
+    
+    isLoadingLabitbu = true;
+    
+    // Update button state
+    const loadLabitbuBtn = document.getElementById('load-labitbu-btn');
+    if (loadLabitbuBtn) {
+        loadLabitbuBtn.disabled = true;
+        loadLabitbuBtn.textContent = 'Loading...';
+        loadLabitbuBtn.style.background = '#6c757d';
+    }
+
     try {
+        let satNumbers = [];
+        let labitbuMintTxid = [];
+        // Reset previously extracted images for a fresh selection
+        labitbuImages = [];
+
+        let address = '';
+        let testAddressInput = document.getElementById('test-address-input');
+        if (testAddressInput && testAddressInput.value.trim()) {
+            address = testAddressInput.value.trim();
+        } else if (typeof playerWallet === 'string' && playerWallet.length > 0) {
+            address = playerWallet;
+        } else {
+            alert('No address found. Please connect your wallet or enter an address.');
+            return;
+        }
+        
+        // Fetch the outputs from thord.wizards.art
+        let outputs = [];
         const url = `https://thord.wizards.art/outputs/${encodeURIComponent(address)}`;
         const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
         if (!resp.ok) {
             throw new Error(`Failed to fetch outputs: ${resp.statusText}`);
         }
         outputs = await resp.json();
-    } catch (err) {
-        console.error('Error fetching outputs:', err);
-        alert('Failed to fetch outputs for address: ' + address);
-        return;
-    }
 
-    // Collect sat ranges without expanding to individual sats to avoid huge arrays
-    const satRanges = [];
-    if (Array.isArray(outputs)) {
-        for (const output of outputs) {
-            if (Array.isArray(output.sat_ranges)) {
-                for (const range of output.sat_ranges) {
-                    // Each range is [start, end), inclusive of start, exclusive of end
-                    if (
-                        Array.isArray(range) &&
-                        range.length === 2 &&
-                        Number.isFinite(range[0]) &&
-                        Number.isFinite(range[1]) &&
-                        range[0] < range[1]
-                    ) {
-                        satRanges.push([range[0], range[1]]);
+        // Collect sat ranges without expanding to individual sats to avoid huge arrays
+        const satRanges = [];
+        if (Array.isArray(outputs)) {
+            for (const output of outputs) {
+                if (Array.isArray(output.sat_ranges)) {
+                    for (const range of output.sat_ranges) {
+                        // Each range is [start, end), inclusive of start, exclusive of end
+                        if (
+                            Array.isArray(range) &&
+                            range.length === 2 &&
+                            Number.isFinite(range[0]) &&
+                            Number.isFinite(range[1]) &&
+                            range[0] < range[1]
+                        ) {
+                            satRanges.push([range[0], range[1]]);
+                        }
                     }
                 }
             }
         }
-    }
-    
+        
         console.log('Address being searched:', address);
-    console.log('Number of outputs found:', outputs.length);
-    console.log('Number of sat ranges found:', satRanges.length);
-    console.log('All sat ranges:', satRanges);
-    
-    try {
+        console.log('Number of outputs found:', outputs.length);
+        console.log('Number of sat ranges found:', satRanges.length);
+        console.log('All sat ranges:', satRanges);
+        
         const labitbuResp = await fetch('labitbu.json');
         if (!labitbuResp.ok) {
             throw new Error(`Error loading labitbu.json: ${labitbuResp.statusText}`);
@@ -183,17 +210,11 @@ async function loadLabitbu() {
         
         console.log('Matches found between sat ranges and labitbu data:', matchesFound);
         console.log('Unique labitbu txids found:', labitbuMintTxid.length);
-        
-    } catch (err) {
-        console.error('Error searching for sat:', err);
-        return null;
-    }
 
-    // Use webp-extractor.js to extract the image using the txid
-    if (Array.isArray(labitbuMintTxid) && labitbuMintTxid.length > 0) {
-        // Assume WebPExtractor is available globally or imported
-        const extractor = new WebPExtractor();
-        try {
+        // Use webp-extractor.js to extract the image using the txid
+        if (Array.isArray(labitbuMintTxid) && labitbuMintTxid.length > 0) {
+            // Assume WebPExtractor is available globally or imported
+            const extractor = new WebPExtractor();
             if (typeof showLoading === 'function') showLoading('Extracting Labitbu images...');
             // Iterate over all found txids
             for (let i = 0; i < labitbuMintTxid.length; i++) {
@@ -215,13 +236,23 @@ async function loadLabitbu() {
                 SelectLabitbu();
             }
             if (typeof hideLoading === 'function') hideLoading();
-        } catch (err) {
-            console.error('Error extracting Labitbu images:', err);
-            alert('Error extracting Labitbu images: ' + (err && err.message ? err.message : err));
-            if (typeof hideLoading === 'function') hideLoading();
+        } else {
+            alert('No Labitbu mint txid found for the provided address.');
         }
-    } else {
-        alert('No Labitbu mint txid found for the provided address.');
+    } catch (err) {
+        console.error('Error in loadLabitbu:', err);
+        alert('Error loading Labitbu: ' + (err && err.message ? err.message : err));
+        if (typeof hideLoading === 'function') hideLoading();
+    } finally {
+        isLoadingLabitbu = false;
+        
+        // Reset button state
+        const loadLabitbuBtn = document.getElementById('load-labitbu-btn');
+        if (loadLabitbuBtn) {
+            loadLabitbuBtn.disabled = false;
+            loadLabitbuBtn.textContent = 'Load Labitbu';
+            loadLabitbuBtn.style.background = '';
+        }
     }
 }
 
@@ -232,6 +263,16 @@ function SelectLabitbu(){
     // Remove any existing overlay
     const existing = document.getElementById('labitbu-select-overlay');
     if (existing) existing.remove();
+
+    // Remove duplicate image URLs from labitbuImages, preserving order
+    if (Array.isArray(labitbuImages)) {
+        const seen = new Set();
+        labitbuImages = labitbuImages.filter(url => {
+            if (seen.has(url)) return false;
+            seen.add(url);
+            return true;
+        });
+    }
 
     // Create overlay
     const overlay = document.createElement('div');
@@ -304,12 +345,14 @@ function SelectLabitbu(){
             nextImg.onload = () => {
                 try { console.log('Labitbu image loaded', nextImg.width, nextImg.height); } catch(_) {}
                 playerImg = nextImg;
+                selectedLabitbu = url;
             };
             nextImg.onerror = (e) => {
                 try { console.error('Failed to load selected Labitbu image', e); } catch(_) {}
             };
             nextImg.src = url;
             overlay.remove();
+            startGame();
         });
 
         grid.appendChild(card);
@@ -451,18 +494,21 @@ function drawBackground() {
 
 // Draw the player
 function drawPlayer() {
-    // Update hop animation speed based on game speed
-    player.hopSpeed = background.speed * 0.8; // Animation speed scales with game speed
-    
-    // Update hop offset for up-and-down movement
-    player.hopOffset += player.hopSpeed;
+    // Update hop animation speed based on game speed only during active gameplay
+    if (gameState === GAME_STATES.GAME && !player.isDying) {
+        player.hopSpeed = background.speed * 0.8; // Animation speed scales with game speed
+        // Update hop offset for up-and-down movement
+        player.hopOffset += player.hopSpeed;
+    } else {
+        player.hopSpeed = 0;
+    }
     
     // Only apply hopping animation when grounded (not jumping)
     const groundY = canvas.height - player.height - 20;
     const isGrounded = player.y >= groundY - 1; // Small tolerance for floating point
     
     let hopAmount = 0;
-    if (isGrounded && !player.isDying) {
+    if (isGrounded && gameState === GAME_STATES.GAME && !player.isDying) {
         // Up and down movement when grounded - fixed height regardless of speed
         hopAmount = Math.sin(player.hopOffset * 0.1) * 2; // Fixed 2-pixel hop height
     }
@@ -610,19 +656,21 @@ function updatePlayer() {
 // Handle keyboard input
 document.addEventListener('keydown', function(event) {
     // Jump controls - multiple keys supported
-    if ((event.code === 'Space' || 
-         event.code === 'ArrowUp' || 
-         event.code === 'KeyW') && 
-        !player.isJumping) {
-        if (!player.isDying) {
-            player.velocityY = -18;
-            player.isJumping = true;
+    if (!player.isDying) {
+        if ((event.code === 'Space' || 
+            event.code === 'ArrowUp' || 
+            event.code === 'KeyW') && 
+            !player.isJumping) {
+            
+                player.velocityY = -18;
+                player.isJumping = true;
+            }
+        
+        
+        // Fast fall controls
+        if (event.code === 'ArrowDown' || event.code === 'KeyS') {
+            player.velocityY += 2; // Make player fall faster
         }
-    }
-    
-    // Fast fall controls
-    if (event.code === 'ArrowDown' || event.code === 'KeyS') {
-        player.velocityY += 2; // Make player fall faster
     }
 });
 
@@ -646,51 +694,240 @@ function updateDisplays() {
 
 // Animation loop
 function gameLoop() {
-    // Update game speed
-    background.speed += speedAcceleration;
-    
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Update background position
-    background.x -= background.speed;
-    
-    // Spawn obstacles
-    obstacleTimer++;
-    if (obstacleTimer >= obstacleSpawnRate) {
-        createObstacle();
-        obstacleTimer = 0;
+    // Handle different game states
+    if (gameState === GAME_STATES.MAIN_MENU) {
+        // Draw static main menu - no game updates
+        drawMainMenu();
+        // Update displays to show current values
+        updateDisplays();
+    } else if (gameState === GAME_STATES.DEATH_SCREEN) {
+        // Continue drawing the game scene in background but don't update
+        drawBackground();
+        drawClouds();
+        drawPlayer();
+        drawObstacles();
+        drawDeathScreen();
+        // Update displays to show final values
+        updateDisplays();
+    } else if (gameState === GAME_STATES.GAME) {
+        // Update game speed
+        background.speed += speedAcceleration;
+        
+        // Update background position
+        background.x -= background.speed;
+        
+        // Spawn obstacles
+        obstacleTimer++;
+        if (obstacleTimer >= obstacleSpawnRate) {
+            createObstacle();
+            obstacleTimer = 0;
+        }
+        
+        // Spawn clouds
+        cloudTimer++;
+        if (cloudTimer >= cloudSpawnRate) {
+            createCloud();
+            cloudTimer = 0;
+        }
+        
+        // Update all game objects
+        updatePlayer();
+        updateObstacles();
+        updateClouds();
+        
+        checkCollisions();
+        
+        // Draw everything (clouds first for background effect)
+        drawBackground();
+        drawClouds();
+        drawPlayer();
+        drawObstacles();
+        
+        // Update score and distance only during active gameplay
+        distanceTraveled += background.speed;
+        score += background.speed;
+        
+        // Update displays
+        updateDisplays();
     }
-    
-    // Spawn clouds
-    cloudTimer++;
-    if (cloudTimer >= cloudSpawnRate) {
-        createCloud();
-        cloudTimer = 0;
-    }
-    
-    // Update all game objects
-    updatePlayer();
-    updateObstacles();
-    updateClouds();
-    
-    checkCollisions();
-    
-    // Draw everything (clouds first for background effect)
-    drawBackground();
-    drawClouds();
-    drawPlayer();
-    
-    drawObstacles();
-    
-    // Update score and distance
-    distanceTraveled += background.speed;
-    score += background.speed;
-    
-    // Update displays
-    updateDisplays();
     
     requestAnimationFrame(gameLoop);
+}
+
+// Menu rendering functions
+function drawMainMenu() {
+    // Clear canvas
+    ctx.fillStyle = '#87CEEB';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw background
+    drawBackground();
+    
+    // Responsive layout based on canvas size
+    const titleSize = Math.max(28, Math.floor(canvas.height * 0.16));
+    const subSize = Math.max(14, Math.floor(canvas.height * 0.08));
+    const infoSize = Math.max(12, Math.floor(canvas.height * 0.06));
+    const buttonWidth = Math.min(320, Math.floor(canvas.width * 0.4));
+    const buttonHeight = Math.max(32, Math.floor(canvas.height * 0.12));
+    const buttonSpacing = Math.max(12, Math.floor(canvas.height * 0.05));
+    const buttonStartY = Math.floor(canvas.height * 0.42);
+    
+    // Title
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.font = `bold ${titleSize}px Arial`;
+    ctx.fillText('LABITBU RUNNER', canvas.width / 2, Math.floor(canvas.height * 0.22));
+    
+    // Subtitle
+    ctx.font = `${subSize}px Arial`;
+    ctx.fillText('Connect your wallet and select your Labitbu!', canvas.width / 2, Math.floor(canvas.height * 0.32));
+    
+    // Wallet status
+    ctx.font = `${infoSize}px Arial`;
+    if (playerWallet) {
+        ctx.fillStyle = '#28a745';
+        ctx.fillText(`Wallet: ${playerWallet.substring(0, 8)}...`, canvas.width / 2, Math.floor(canvas.height * 0.38));
+    } else {
+        ctx.fillStyle = '#dc3545';
+        ctx.fillText('No wallet connected', canvas.width / 2, Math.floor(canvas.height * 0.38));
+    }
+    
+    // Buttons (centered)
+    // Connect Wallet Button
+    ctx.fillStyle = playerWallet ? '#6c757d' : '#007bff';
+    ctx.fillRect(canvas.width / 2 - buttonWidth / 2, buttonStartY, buttonWidth, buttonHeight);
+    ctx.fillStyle = '#fff';
+    ctx.font = `${Math.max(14, Math.floor(buttonHeight * 0.5))}px Arial`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(playerWallet ? 'Wallet Connected' : 'Connect Wallet', canvas.width / 2, buttonStartY + Math.floor(buttonHeight / 2));
+    
+    // Load Labitbu Button (always shown, greyed out if no wallet)
+    const secondY = buttonStartY + buttonSpacing + buttonHeight;
+    ctx.fillStyle = playerWallet ? '#28a745' : '#6c757d';
+    ctx.fillRect(canvas.width / 2 - buttonWidth / 2, secondY, buttonWidth, buttonHeight);
+    ctx.fillStyle = playerWallet ? '#fff' : '#999';
+    ctx.fillText('Load Labitbu', canvas.width / 2, secondY + Math.floor(buttonHeight / 2));
+    
+    // Play with Default Button
+    ctx.fillStyle = '#ffc107';
+    const thirdY = buttonStartY + buttonSpacing + buttonHeight + buttonSpacing + buttonHeight;
+    ctx.fillRect(canvas.width / 2 - buttonWidth / 2, thirdY, buttonWidth, buttonHeight);
+    ctx.fillStyle = '#000';
+    ctx.fillText('Play with Default', canvas.width / 2, thirdY + Math.floor(buttonHeight / 2));
+    
+    // Instructions
+    ctx.fillStyle = '#666';
+    ctx.font = `${Math.max(12, Math.floor(canvas.height * 0.05))}px Arial`;
+}
+
+function drawDeathScreen() {
+    // Responsive sizes
+    const overlayAlpha = 0.75;
+    const titleSize = Math.max(26, Math.floor(canvas.height * 0.14));
+    const infoSize = Math.max(16, Math.floor(canvas.height * 0.08));
+    const buttonWidth = Math.min(300, Math.floor(canvas.width * 0.38));
+    const buttonHeight = Math.max(32, Math.floor(canvas.height * 0.12));
+    const buttonSpacing = Math.max(12, Math.floor(canvas.height * 0.05));
+    const buttonY = Math.floor(canvas.height * 0.58);
+
+    // Semi-transparent overlay
+    ctx.fillStyle = `rgba(0, 0, 0, ${overlayAlpha})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Death message
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.font = `bold ${titleSize}px Arial`;
+    const titleY = Math.floor(canvas.height * 0.18);
+    ctx.fillText('GAME OVER', canvas.width / 2, titleY);
+    
+    // Score
+    const vGapSmall = Math.max(6, Math.floor(canvas.height * 0.01));
+    const vGapMedium = Math.max(10, Math.floor(canvas.height * 0.02));
+    ctx.font = `${infoSize}px Arial`;
+    const scoreY = titleY + titleSize + vGapMedium;
+    ctx.fillText(`Score: ${Math.floor(score)}`, canvas.width / 2, scoreY);
+    const highScoreY = scoreY + infoSize + vGapSmall;
+    ctx.fillText(`High Score: ${highScore}`, canvas.width / 2, highScoreY);
+    
+    // Play Again Button
+    ctx.fillStyle = '#28a745';
+    ctx.fillRect(canvas.width / 2 - buttonWidth / 2, buttonY, buttonWidth, buttonHeight);
+    ctx.fillStyle = '#fff';
+    ctx.font = `${Math.max(14, Math.floor(buttonHeight * 0.5))}px Arial`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Play Again', canvas.width / 2, buttonY + Math.floor(buttonHeight / 2));
+    
+    // Main Menu Button
+    ctx.fillStyle = '#007bff';
+    const mmY = buttonY + buttonSpacing + buttonHeight;
+    ctx.fillRect(canvas.width / 2 - buttonWidth / 2, mmY, buttonWidth, buttonHeight);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Main Menu', canvas.width / 2, mmY + Math.floor(buttonHeight / 2));
+}
+
+// Button click detection
+function handleCanvasClick(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    if (gameState === GAME_STATES.MAIN_MENU) {
+        // Match layout values from drawMainMenu
+        const buttonWidth = Math.min(320, Math.floor(canvas.width * 0.4));
+        const buttonHeight = Math.max(32, Math.floor(canvas.height * 0.12));
+        const buttonSpacing = Math.max(12, Math.floor(canvas.height * 0.05));
+        const buttonY = Math.floor(canvas.height * 0.42);
+        
+        // Connect Wallet Button
+        if (x >= canvas.width / 2 - buttonWidth / 2 && 
+            x <= canvas.width / 2 + buttonWidth / 2 &&
+            y >= buttonY && y <= buttonY + buttonHeight) {
+            if (!playerWallet) {
+                connectXverseWallet();
+            }
+        }
+        
+        // Load Labitbu Button (only functional if wallet connected)
+        if (x >= canvas.width / 2 - buttonWidth / 2 && 
+            x <= canvas.width / 2 + buttonWidth / 2 &&
+            y >= buttonY + buttonSpacing + buttonHeight && y <= buttonY + buttonSpacing + buttonHeight * 2) {
+            if (playerWallet) {
+                loadLabitbu();
+            }
+        }
+        
+        // Play with Default Button
+        if (x >= canvas.width / 2 - buttonWidth / 2 && 
+            x <= canvas.width / 2 + buttonWidth / 2 &&
+            y >= buttonY + buttonSpacing + buttonHeight + buttonSpacing + buttonHeight &&
+            y <= buttonY + buttonSpacing + buttonHeight + buttonSpacing + buttonHeight * 2) {
+            startGame();
+        }
+    } else if (gameState === GAME_STATES.DEATH_SCREEN) {
+        const buttonWidth = Math.min(300, Math.floor(canvas.width * 0.38));
+        const buttonHeight = Math.max(32, Math.floor(canvas.height * 0.12));
+        const buttonSpacing = Math.max(12, Math.floor(canvas.height * 0.05));
+        const buttonY = Math.floor(canvas.height * 0.58);
+        
+        // Play Again Button
+        if (x >= canvas.width / 2 - buttonWidth / 2 && 
+            x <= canvas.width / 2 + buttonWidth / 2 &&
+            y >= buttonY && y <= buttonY + buttonHeight) {
+            startGame();
+        }
+        
+        // Main Menu Button
+        if (x >= canvas.width / 2 - buttonWidth / 2 && 
+            x <= canvas.width / 2 + buttonWidth / 2 &&
+            y >= buttonY + buttonSpacing + buttonHeight && y <= buttonY + buttonSpacing + buttonHeight * 2) {
+            goToMainMenu();
+        }
+    }
 }
 
 // Start the game loop when all images are loaded
@@ -705,20 +942,18 @@ function checkImagesLoaded() {
 }
 
 function gameOver() {
-    
+    player.isDying = false;
     // Check for new high score
     const currentScore = Math.floor(score);
     if (currentScore > highScore) {
         highScore = currentScore;
         localStorage.setItem('labitbuHighScore', highScore);
     }
-    player.isDying = true;
-    setTimeout(restartGame, 1000);
+    gameState = GAME_STATES.DEATH_SCREEN;
 }
 
 
-function restartGame() {
-
+function resetGame() {
     // Reset all game variables to start over
     background.x = 0;
     background.speed = 4.5;
@@ -741,14 +976,30 @@ function restartGame() {
     distanceTraveled = 0;
     score = 0;
 
-    // Reset displays
-
+    // Reset displays immediately
     updatePlayer();
-    
-
     updateDisplays();
-    
-    // Don't reload images - they're already loaded and working fine!
+}
+
+function startGame() {
+    resetGame();
+    // Reset to default Labitbu image
+    playerImg = new Image();
+    playerImg.src = 'Game-Img/labitbu.webp';
+    selectedLabitbu = null;
+    gameState = GAME_STATES.GAME;
+}
+
+function goToMainMenu() {
+    gameState = GAME_STATES.MAIN_MENU;
+    resetGame();
+    // Ensure the game is completely stopped
+    background.speed = 4.5;
+    background.x = 0;
+    player.isDying = false;
+    // Clear any ongoing game timers
+    obstacleTimer = 0;
+    cloudTimer = 0;
 }
 
 // Add event listener for wallet connection button
@@ -784,8 +1035,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const restartBtn = document.getElementById('restart-btn');
     if (restartBtn) {
-        restartBtn.addEventListener('click', restartGame);
+        restartBtn.addEventListener('click', startGame);
     }
+    
+    // Add canvas click listener for menu interactions
+    canvas.addEventListener('click', handleCanvasClick);
 });
 
 backgroundImg.onload = checkImagesLoaded;
@@ -795,3 +1049,6 @@ cloudImages.forEach(img => img.onload = checkImagesLoaded);
 
 // Initialize high score display
 updateDisplays();
+
+// Start with main menu
+gameState = GAME_STATES.MAIN_MENU;
