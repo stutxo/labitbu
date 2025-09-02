@@ -233,7 +233,12 @@ async function loadLabitbu() {
             if (labitbuImages.length === 0) {
                 alert('Failed to extract any Labitbu images.');
             } else {
-                SelectLabitbu();
+                // Only open selection UI from main menu to avoid overlay during gameplay/death
+                if (gameState === GAME_STATES.MAIN_MENU) {
+                    SelectLabitbu();
+                } else {
+                    try { console.log('Labitbu images available; selection UI suppressed during state:', gameState); } catch(_) {}
+                }
             }
             if (typeof hideLoading === 'function') hideLoading();
         } else {
@@ -346,6 +351,7 @@ function SelectLabitbu(){
                 try { console.log('Labitbu image loaded', nextImg.width, nextImg.height); } catch(_) {}
                 playerImg = nextImg;
                 selectedLabitbu = url;
+                try { localStorage.setItem('selectedLabitbuUrl', url); } catch(_) {}
             };
             nextImg.onerror = (e) => {
                 try { console.error('Failed to load selected Labitbu image', e); } catch(_) {}
@@ -669,7 +675,7 @@ document.addEventListener('keydown', function(event) {
         
         // Fast fall controls
         if (event.code === 'ArrowDown' || event.code === 'KeyS') {
-            player.velocityY += 2; // Make player fall faster
+            player.velocityY += 10; // Make player fall faster
         }
     }
 });
@@ -983,10 +989,19 @@ function resetGame() {
 
 function startGame() {
     resetGame();
-    // Reset to default Labitbu image
-    playerImg = new Image();
-    playerImg.src = 'Game-Img/labitbu.webp';
-    selectedLabitbu = null;
+    // Use selected or persisted Labitbu if available; otherwise use default
+    const persistedUrl = (function(){ try { return localStorage.getItem('selectedLabitbuUrl'); } catch(_) { return null; } })();
+    const chosenUrl = selectedLabitbu || persistedUrl;
+    if (chosenUrl) {
+        const img = new Image();
+        img.onerror = () => { try { console.warn('Failed to load persisted Labitbu, using default'); } catch(_) {} };
+        img.src = chosenUrl;
+        playerImg = img;
+    } else {
+        const img = new Image();
+        img.src = 'Game-Img/labitbu.webp';
+        playerImg = img;
+    }
     gameState = GAME_STATES.GAME;
 }
 

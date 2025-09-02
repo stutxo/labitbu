@@ -195,6 +195,17 @@
           white-space:nowrap;
       }
       
+      /* Hidden by default (desktop and larger) */
+      .mobile-only {
+          display: none;
+      }
+      
+      /* On ≤800px, hide game and show mobile-only content */
+      @media only screen and (max-width: 1000px) {
+          .mobile-only { display: block; }
+          .game-container { display: none; }
+      }
+      
       @media (max-width: 640px) {
           body {
               word-break: break-word;
@@ -221,6 +232,8 @@
 <header style="text-align:center; margin-top:12px;">
   <h1>labitbu.com 👹</h1>
 </header>
+
+
 
 <section class="resources">
   <br/>
@@ -254,7 +267,8 @@
           <h1>Labitbu Runner</h1>
           <p class="subtitle">Jump, dodge, and survive!</p>
           <p class="subtitle">Connect Xverse to see your own labitbu in action!</p>
-          <p class="subtitle">Beware! This game is a simple POC and should not be considered a complete product.</p>
+
+
       </div>
       
       <canvas id="game"></canvas>
@@ -300,7 +314,12 @@
       </div>
   </div>
 
-  <script src="labitbu-runner.js"></script>
+  <div class="mobile-only" style="max-width:720px; margin:16px auto; text-align:center; background:#fff; border:1px solid #ddd; border-radius:8px; padding:16px;">
+    <h2 style="margin-bottom:8px;">Desktop Only</h2>
+    <p>Labitbu Runner is available on desktop browsers. Please visit on a device wider than 1000px.</p>
+    </div>
+
+  
 </section>
 </body>
 </html>
