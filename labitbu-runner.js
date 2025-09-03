@@ -440,6 +440,7 @@ const obstacleTypes = [
     { name: 'wave.png', width: 48, height: 64, size: 1.75, outline: 10, yOffset: 20},
     { name: 'btc-knots.png', width: 40, height: 40, size: 1.75, outline: 10, yOffset: 0},
     { name: 'filter-net.png', width: 40, height: 40, size: 1.75, outline: 10, yOffset: 0},
+    { name: 'japanese_ogre.png', width: 42, height: 42, size: 1.75, outline: 10, yOffset: 0},
     // Add more obstacle types here
 ];
 

@@ -85,7 +85,7 @@ async function connectXverseWallet() {
         } else {
             console.error('Connection failed:', response.error);
             const msg = response?.error?.message || 'Unknown error';
-            alert('Connection failed: ' + msg + '\n\nTips:\n- Approve the connection in the Xverse popup.\n- If you see code -32002, a request is already pending—close or finish the existing wallet prompt.\n- If previously denied, open Xverse → Settings → Connected apps → remove this site, then retry.\n- Ensure only one wallet extension is active.\n- Use a secure context (https or http://localhost).\n- This app expects Mainnet (bc1p...) addresses.');
+            alert('Connection failed: ' + msg);
         }
     } catch (err) {
         console.error('Wallet connection error:', err);
@@ -440,6 +440,7 @@ const obstacleTypes = [
     { name: 'wave.png', width: 48, height: 64, size: 1.75, outline: 10, yOffset: 20},
     { name: 'btc-knots.png', width: 40, height: 40, size: 1.75, outline: 10, yOffset: 0},
     { name: 'filter-net.png', width: 40, height: 40, size: 1.75, outline: 10, yOffset: 0},
+    { name: 'japanese_ogre.png', width: 42, height: 42, size: 1.75, outline: 10, yOffset: 0},
     // Add more obstacle types here
 ];
 
