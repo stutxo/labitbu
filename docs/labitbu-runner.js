@@ -920,6 +920,12 @@ function handleCanvasClick(event) {
             y <= buttonY + buttonSpacing + buttonHeight + buttonSpacing + buttonHeight * 2) {
             startGame();
         }
+    } else if (gameState === GAME_STATES.GAME) {
+        // Jump on mouse click during gameplay
+        if (!player.isDying && !player.isJumping) {
+            player.velocityY = -18;
+            player.isJumping = true;
+        }
     } else if (gameState === GAME_STATES.DEATH_SCREEN) {
         const buttonWidth = Math.min(300, Math.floor(canvas.width * 0.38));
         const buttonHeight = Math.max(32, Math.floor(canvas.height * 0.12));
