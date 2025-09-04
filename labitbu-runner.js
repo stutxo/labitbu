@@ -449,7 +449,7 @@ const clouds = []; // Array to hold all active clouds
 const cloudTypes = [
     { name: 'cloud1.webp', width: 80, height: 40, size: 1.0, yOffset: 20},
     { name: 'cloud2.webp', width: 60, height: 30, size: 1.0, yOffset: 60},
-    { name: 'cloud3.png', width: 100, height: 50, size: 1.0, yOffset: 10},
+    { name: 'cloud3.png', width: 100, height: 150, size: 1.0, yOffset: 10},
     { name: 'cloud4.png', width: 120, height: 120, size: 1.75, yOffset: 0},
     { name: 'cloud5.png', width: 120, height: 120, size: 1.75, yOffset: 0}
     // Add more cloud types here
@@ -678,6 +678,11 @@ document.addEventListener('keydown', function(event) {
         if (event.code === 'ArrowDown' || event.code === 'KeyS') {
             player.velocityY += 10; // Make player fall faster
         }
+    }
+    
+    // Space key to restart game on death screen
+    if (gameState === GAME_STATES.DEATH_SCREEN && event.code === 'Space') {
+        startGame();
     }
 });
 
