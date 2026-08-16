@@ -139,9 +139,16 @@ img {
 }
 
 .source-link {
-  justify-self: end;
   padding: 7px 12px;
   border: 1px solid var(--ink);
+  text-align: center;
+}
+
+.header-links {
+  display: grid;
+  gap: 4px;
+  justify-self: end;
+  padding-block: 8px;
 }
 
 .intro {
@@ -783,7 +790,7 @@ img {
     font-size: 0.65rem;
   }
 
-  .source-link {
+  .header-links {
     display: none;
   }
 
