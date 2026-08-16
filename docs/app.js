@@ -112,55 +112,8 @@ function populateFilters() {
   }
 }
 
-function renderBarList(elementId, rows, labelFormatter = formatLabel) {
-  const container = document.querySelector(`#${elementId}`);
-  const maximum = Math.max(...rows.map((row) => row.count));
-  const fragment = document.createDocumentFragment();
-
-  for (const row of rows) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "bar-row";
-
-    const label = document.createElement("div");
-    label.className = "bar-label";
-
-    const name = document.createElement("span");
-    name.textContent = labelFormatter(row.value ?? row.label);
-
-    const count = document.createElement("span");
-    count.textContent = `${formatCount(row.count)} / ${formatPercent(row.count)}`;
-
-    const track = document.createElement("div");
-    track.className = "bar-track";
-
-    const fill = document.createElement("div");
-    fill.className = "bar-fill";
-    fill.style.setProperty("--bar-width", `${(row.count / maximum) * 100}%`);
-
-    label.append(name, count);
-    track.append(fill);
-    wrapper.append(label, track);
-    fragment.append(wrapper);
-  }
-
-  container.replaceChildren(fragment);
-}
-
-function renderStats() {
+function cacheTraitCounts() {
   const { stats } = state.data;
-
-  document.querySelector("#stat-block-range").textContent =
-    `${formatCount(stats.startBlock)}-${formatCount(stats.endBlock)}`;
-  document.querySelector("#stat-mint-blocks").textContent = formatCount(stats.mintBlocks);
-  document.querySelector("#stat-unique-sats").textContent = formatCount(stats.uniqueSats);
-  document.querySelector("#stat-largest-minter").textContent =
-    `${formatCount(stats.maxAddressMints)} items`;
-
-  renderBarList("body-stats", stats.bodies);
-  renderBarList("accessory-stats", stats.accessories);
-  renderBarList("copy-stats", stats.copyBuckets, (value) => value);
-  renderBarList("pool-stats", stats.pools, (value) => value);
-  renderBarList("fee-stats", stats.fees, (value) => `${Number(value).toFixed(2)} sat/vB`);
 
   state.bodyCounts = new Map(stats.bodies.map((row) => [row.value, row.count]));
   state.accessoryCounts = new Map(
@@ -472,9 +425,7 @@ function handleHash() {
     return;
   }
 
-  const section = ["#collection", "#stats"].includes(sectionHash)
-    ? document.querySelector(sectionHash)
-    : null;
+  const section = sectionHash === "#collection" ? elements.grid.closest("section") : null;
   if (section) {
     window.requestAnimationFrame(() => section.scrollIntoView());
   }
@@ -574,7 +525,7 @@ async function initialize() {
     state.itemsById = new Map(data.items.map((item) => [item[ITEM.ID], item]));
 
     populateFilters();
-    renderStats();
+    cacheTraitCounts();
     applyFilters();
     elements.grid.setAttribute("aria-busy", "false");
     handleHash();

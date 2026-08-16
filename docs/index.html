@@ -5,40 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Explore all 10,000 Labitbus, their visual rarity, traits, and on-chain provenance.">
-  <title>Labitbu | Full Collection</title>
+  <title>labitbu collection</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preload" href="fonts/NationalPark-VariableVF.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#collection">Skip to collection</a>
-
-  <header class="site-header">
-    <a class="wordmark" href="#top" aria-label="Labitbu home">LABITBU</a>
-    <nav aria-label="Primary navigation">
-      <a href="#collection">Collection</a>
-      <a href="#stats">Stats</a>
-    </nav>
-    <div class="header-links">
-      <a class="source-link" href="https://github.com/labitbu/indexooooor" target="_blank" rel="noreferrer">Index</a>
-      <a class="source-link" href="https://github.com/rot13maxi/awesome-labitbu" target="_blank" rel="noreferrer">Awesome Labitbu</a>
-    </div>
-  </header>
-
   <main id="top">
-    <section class="intro page-shell" aria-label="About Labitbu">
-      <p class="project-transaction">
-        <span>satindex:</span>
-        <a href="https://mempool.space/tx/f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe" target="_blank" rel="noreferrer">f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe</a>
-      </p>
-    </section>
-
     <section class="collection-section page-shell" id="collection" aria-labelledby="collection-title">
-      <div class="section-heading">
-        <h2 id="collection-title">Collection</h2>
-        <p id="collection-status" class="section-note" aria-live="polite">Loading collection...</p>
+      <div class="collection-intro">
+        <h1 id="collection-title">labitbu collection</h1>
+        <div class="resource-links">
+          <p>
+            <span>satindex:</span>
+            <a class="identifier-link" href="https://mempool.space/tx/f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe" target="_blank" rel="noreferrer">f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe</a>
+          </p>
+          <p>
+            <span>awesome labitbu:</span>
+            <a href="https://github.com/rot13maxi/awesome-labitbu" target="_blank" rel="noreferrer">github.com/rot13maxi/awesome-labitbu</a>
+          </p>
+        </div>
       </div>
+      <p id="collection-status" class="collection-status" aria-live="polite">Loading collection...</p>
 
       <form class="collection-toolbar" id="collection-filters" role="search">
         <label class="search-field">
@@ -114,71 +103,7 @@
         <span>Refresh the page or try again in a moment.</span>
       </div>
     </section>
-
-    <section class="stats-section page-shell" id="stats" aria-labelledby="stats-title">
-      <div class="section-heading">
-        <h2 id="stats-title">Collection stats</h2>
-        <p class="section-note">Counts come directly from the collection index.</p>
-      </div>
-
-      <div class="stats-grid">
-        <article class="stat-panel">
-          <div class="panel-heading">
-            <h3>Bodies</h3>
-            <span>10,000 total</span>
-          </div>
-          <div class="bar-list" id="body-stats" aria-label="Body distribution"></div>
-        </article>
-        <article class="stat-panel">
-          <div class="panel-heading">
-            <h3>Accessories</h3>
-            <span>Including none</span>
-          </div>
-          <div class="bar-list" id="accessory-stats" aria-label="Accessory distribution"></div>
-        </article>
-        <article class="stat-panel">
-          <div class="panel-heading">
-            <h3>Exact artwork</h3>
-            <span>By item</span>
-          </div>
-          <div class="bar-list" id="copy-stats" aria-label="Artwork copy distribution"></div>
-        </article>
-        <article class="stat-panel stat-panel-numbers">
-          <div class="panel-heading">
-            <h3>Minting</h3>
-            <span>Blocks and sats</span>
-          </div>
-          <dl class="number-list">
-            <div><dt>Block range</dt><dd id="stat-block-range">908,072-908,196</dd></div>
-            <div><dt>Blocks with mints</dt><dd id="stat-mint-blocks">79</dd></div>
-            <div><dt>Unique sats</dt><dd id="stat-unique-sats">9,967</dd></div>
-            <div><dt>Largest mint address</dt><dd id="stat-largest-minter">26</dd></div>
-          </dl>
-        </article>
-        <article class="stat-panel stat-panel-wide">
-          <div class="panel-heading">
-            <h3>Mining pools</h3>
-            <span>Items, not blocks</span>
-          </div>
-          <div class="bar-list bar-list-columns" id="pool-stats" aria-label="Mining pool distribution"></div>
-        </article>
-        <article class="stat-panel stat-panel-wide">
-          <div class="panel-heading">
-            <h3>Fee rates</h3>
-            <span>sat/vB</span>
-          </div>
-          <div class="bar-list bar-list-columns" id="fee-stats" aria-label="Fee rate distribution"></div>
-        </article>
-      </div>
-    </section>
-
   </main>
-
-  <footer class="site-footer page-shell">
-    <span>LABITBU / 10,000</span>
-    <a href="https://mempool.space/tx/f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe" target="_blank" rel="noreferrer">satindex</a>
-    <a href="#top">Back to top</a>
-  </footer>
 
   <dialog class="item-dialog" id="item-dialog" aria-labelledby="dialog-title">
     <button class="dialog-close" id="dialog-close" type="button" aria-label="Close item details">Close</button>
