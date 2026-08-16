@@ -1,325 +1,208 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"/>
-  <meta name="color-scheme" content="light">
-  <meta name="supported-color-schemes" content="light">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <title>labitbu.com 👹</title>
-  <style>
-      * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-      }
-      
-      :root {
-          color-scheme: light;
-      }
-      
-      html, body {
-          touch-action: manipulation;
-          background: #fff;
-          color: #111;
-      }
-      
-      body {
-          background: #f5f5f5;
-          font-family: Arial, sans-serif;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 20px;
-          color: #333;
-      }
-      
-      .game-container {
-          background: white;
-          border-radius: 8px;
-          padding: 20px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          border: 1px solid #ddd;
-      }
-      
-      .game-header {
-          text-align: center;
-          margin-bottom: 20px;
-      }
-      
-      h1 {
-          font-size: 1.8em;
-          font-weight: bold;
-          margin-bottom: 8px;
-          color: #333;
-      }
-      
-      .subtitle {
-          font-size: 0.9em;
-          color: #666;
-          margin-bottom: 15px;
-      }
-      
-      #game {
-          border: 2px solid #ccc;
-          border-radius: 4px;
-          background-color: white;
-          display: block;
-          margin: 0 auto;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-      
-      .game-stats {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-          gap: 10px;
-          margin-top: 15px;
-          max-width: 500px;
-      }
-      
-      .stat {
-          background: #f8f8f8;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          padding: 10px;
-          text-align: center;
-      }
-      
-      .stat-label {
-          font-size: 0.7em;
-          color: #666;
-          margin-bottom: 4px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-      }
-      
-      .stat-value {
-          font-size: 1.2em;
-          font-weight: bold;
-          color: #333;
-      }
-      
-      .high-score {
-          background: #e8e8e8;
-          border: 2px solid #999;
-      }
-      
-      .controls {
-          margin-top: 15px;
-          text-align: center;
-      }
-      
-      .control-info {
-          font-size: 0.8em;
-          color: #666;
-          margin-bottom: 10px;
-      }
-      
-      #restart-btn {
-          background: #555;
-          color: white;
-          border: none;
-          padding: 8px 16px;
-          font-size: 14px;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background 0.2s ease;
-          font-weight: bold;
-      }
-      
-      #restart-btn:hover {
-          background: #333;
-      }
-      
-      .wallet-section {
-          margin-top: 15px;
-          text-align: center;
-          padding: 10px;
-          background: #f8f8f8;
-          border-radius: 4px;
-          border: 1px solid #ddd;
-      }
-      
-      .wallet-info {
-          font-size: 0.8em;
-          color: #666;
-          margin-bottom: 8px;
-      }
-      
-      #connect-wallet-btn {
-          background: #007bff;
-          color: white;
-          border: none;
-          padding: 6px 12px;
-          font-size: 12px;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background 0.2s ease;
-          font-weight: bold;
-      }
-      
-      #connect-wallet-btn:hover {
-          background: #0056b3;
-      }
-      
-      .resources { 
-          text-align:center; 
-          margin:8px auto 16px; 
-      }
-      
-      .res {
-          display:grid;
-          grid-template-columns: max-content 1fr;
-          gap: 6px 12px;
-          max-width: 720px;
-          margin: 0 auto;
-          text-align:left;
-      }
-      
-      .res dt { 
-          font-weight:600; 
-          color:#222; 
-      }
-      
-      .res dd { 
-          margin:0; 
-      }
-      
-      .mono-clip {
-          font-family: monospace;
-          display:inline-block;
-          max-width: 100%;
-          overflow:hidden; 
-          text-overflow:ellipsis; 
-          white-space:nowrap;
-      }
-      
-      /* Hidden by default (desktop and larger) */
-      .mobile-only {
-          display: none;
-      }
-      
-      /* On ≤800px, hide game and show mobile-only content */
-      @media only screen and (max-width: 1000px) {
-          .mobile-only { display: block; }
-          .game-container { display: none; }
-      }
-      
-      @media (max-width: 640px) {
-          body {
-              word-break: break-word;
-              overflow-wrap: anywhere;
-          }
-          input, button {
-              max-width: 100%;
-              box-sizing: border-box;
-              font-size: 16px;
-          }
-          .mono-clip {
-              white-space: normal;
-          }
-      }
-  </style>
-  <!-- Sats Connect for Bitcoin wallet integration -->
-  <script src="https://unpkg.com/sats-connect@latest/dist/index.js"></script>
-  <!-- WebP Extractor for Bitcoin inscriptions -->
-  <script src="webp-extractor.js"></script>
-
-  <script type="module" src="labitbu-runner.js"></script>
+  <meta name="description" content="Explore all 10,000 Labitbus, their visual rarity, traits, and on-chain provenance.">
+  <title>Labitbu | Full Collection</title>
+  <link rel="preload" href="fonts/NationalPark-VariableVF.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
 </head>
 <body>
-<header style="text-align:center; margin-top:12px;">
+  <a class="skip-link" href="#collection">Skip to collection</a>
 
-</header>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="Labitbu home">LABITBU</a>
+    <nav aria-label="Primary navigation">
+      <a href="#collection">Collection</a>
+      <a href="#stats">Stats</a>
+    </nav>
+    <a class="source-link" href="https://github.com/labitbu/indexooooor" target="_blank" rel="noreferrer">Index</a>
+  </header>
 
+  <main id="top">
+    <section class="intro page-shell" aria-label="About Labitbu">
+      <p class="project-transaction">
+        <span>satindex:</span>
+        <a href="https://mempool.space/tx/f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe" target="_blank" rel="noreferrer">f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe</a>
+      </p>
+    </section>
 
-
-<section class="resources">
-  <br/>
-  <img src="labitboogie.webp" alt="labitbu image" style="max-width:200px; display:block; margin:8px auto;" />
-  <br/>
-  <dl class="res">
-    <dt>labitbu sat index transaction</dt>
-    <dd>
-      <a href="https://mempool.space/tx/f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe" target="_blank">
-        <span class="mono-clip">f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe</span>
-      </a>
-    </dd>
-
-    <dt>index/trait repo (full DB & images)</dt>
-    <dd><a href="https://github.com/labitbu/indexooooor" target="_blank">indexooooor</a></dd>
-
-    <dt>make your own labitbu</dt>
-    <dd><a href="https://github.com/stutxo/labitbu-maker" target="_blank">labitbu-maker</a></dd>
-
-    <dt>pathologies repo (ord fork)</dt>
-    <dd><a href="https://github.com/labitbu/pathologies" target="_blank">pathologies</a></dd>
-
-    <dt>awesome labitbu resources</dt>
-    <dd><a href="https://github.com/rot13maxi/awesome-labitbu" target="_blank">awesome-labitbu</a></dd>
-  </dl>
-</section>
-
-<section>
-    <div class="game-container">
-      <div class="game-header">
-          <h1>Labitbu Runner</h1>
-          <p class="subtitle">Jump, dodge, and survive!</p>
-          <p class="subtitle">Connect Xverse to see your own labitbu in action!</p>
-
-
+    <section class="collection-section page-shell" id="collection" aria-labelledby="collection-title">
+      <div class="section-heading">
+        <h2 id="collection-title">Collection</h2>
+        <p id="collection-status" class="section-note" aria-live="polite">Loading collection...</p>
       </div>
-      
-      <canvas id="game"></canvas>
-      
-      <div class="game-stats">
-          <div class="stat">
-              <div class="stat-label">Speed</div>
-              <div class="stat-value" id="speed">0.00</div>
-          </div>
-          <div class="stat">
-              <div class="stat-label">Distance</div>
-              <div class="stat-value" id="distance">0</div>
-          </div>
-          <div class="stat">
-              <div class="stat-label">Score</div>
-              <div class="stat-value" id="score">0</div>
-          </div>
-          <div class="stat high-score">
-              <div class="stat-label">High Score</div>
-              <div class="stat-value" id="high-score">0</div>
-          </div>
-      </div>
-      
-      <div class="controls">
-          <div class="control-info">
-              <strong>Controls:</strong> SPACE / W / ↑ to jump | S / ↓ to fast fall
-          </div>
-          <button id="restart-btn">Restart Game</button>
-      </div>
-      
-      <div class="wallet-section">
-          <div class="wallet-info">
-              <strong>Wallet:</strong> <span id="wallet-status">Not connected</span>
-          </div>
-          <button id="connect-wallet-btn">Connect Xverse Wallet</button>
-          <button id="load-labitbu-btn" style="display: none; background: #28a745; color: white; border: none; padding: 6px 12px; font-size: 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-weight: bold;">Load Labitbu</button>
-          <div style="margin-top: 8px;">
-            <!--
-              <input type="text" id="test-address-input" placeholder="Enter address for testing (optional)" style="width: 100%; padding: 4px; font-size: 11px; border: 1px solid #ddd; border-radius: 3px; margin-bottom: 4px;">
-              <small style="color: #666; font-size: 10px;">Leave empty to use connected wallet address</small>
-            -->
-          </div>
-      </div>
-  </div>
 
-  <div class="mobile-only" style="max-width:720px; margin:16px auto; text-align:center; background:#fff; border:1px solid #ddd; border-radius:8px; padding:16px;">
-    <h2 style="margin-bottom:8px;">Desktop Only</h2>
-    <p>Labitbu Runner is available on desktop browsers. Please visit on a device wider than 1000px.</p>
+      <form class="collection-toolbar" id="collection-filters" role="search">
+        <label class="search-field">
+          <span>Search</span>
+          <input id="search" name="search" type="search" autocomplete="off" placeholder="Number, txid, sat, or address">
+        </label>
+        <label>
+          <span>Body</span>
+          <select id="body-filter" name="body">
+            <option value="all">All bodies</option>
+          </select>
+        </label>
+        <label>
+          <span>Accessory</span>
+          <select id="accessory-filter" name="accessory">
+            <option value="all">All accessories</option>
+          </select>
+        </label>
+        <label>
+          <span>Artwork</span>
+          <select id="copies-filter" name="copies">
+            <option value="all">Any copy count</option>
+            <option value="1">One of one</option>
+            <option value="3">3 copies or fewer</option>
+            <option value="10">10 copies or fewer</option>
+          </select>
+        </label>
+        <label>
+          <span>Rarity</span>
+          <select id="rarity-filter" name="rarity">
+            <option value="all">All ranks</option>
+            <option value="100">Top 100</option>
+            <option value="500">Top 500</option>
+            <option value="1000">Top 10%</option>
+          </select>
+        </label>
+        <label>
+          <span>Pool</span>
+          <select id="pool-filter" name="pool">
+            <option value="all">All pools</option>
+          </select>
+        </label>
+        <label>
+          <span>Sort</span>
+          <select id="sort" name="sort">
+            <option value="id-asc">Number: low to high</option>
+            <option value="id-desc">Number: high to low</option>
+            <option value="rarity">Rarity rank</option>
+            <option value="copies">Fewest copies</option>
+            <option value="block">Mint block</option>
+          </select>
+        </label>
+        <button class="reset-button" id="reset-filters" type="reset">Reset</button>
+      </form>
+
+      <div class="collection-grid" id="collection-grid" role="list" aria-busy="true"></div>
+      <div class="collection-empty" id="collection-empty" hidden>
+        <p>No Labitbus match those filters.</p>
+        <button type="button" data-reset-filters>Clear filters</button>
+      </div>
+      <nav class="pagination" id="pagination" aria-label="Collection pages" hidden>
+        <button id="first-page" type="button">First</button>
+        <button id="previous-page" type="button">Previous</button>
+        <p>
+          <span id="page-status" aria-live="polite">Page 1 of 100</span>
+          <span id="page-range">1-100 of 10,000</span>
+        </p>
+        <button id="next-page" type="button">Next</button>
+        <button id="last-page" type="button">Last</button>
+      </nav>
+      <div class="load-error" id="load-error" role="alert" hidden>
+        <strong>The collection data could not be loaded.</strong>
+        <span>Refresh the page or try again in a moment.</span>
+      </div>
+    </section>
+
+    <section class="stats-section page-shell" id="stats" aria-labelledby="stats-title">
+      <div class="section-heading">
+        <h2 id="stats-title">Collection stats</h2>
+        <p class="section-note">Counts come directly from the collection index.</p>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-panel">
+          <div class="panel-heading">
+            <h3>Bodies</h3>
+            <span>10,000 total</span>
+          </div>
+          <div class="bar-list" id="body-stats" aria-label="Body distribution"></div>
+        </article>
+        <article class="stat-panel">
+          <div class="panel-heading">
+            <h3>Accessories</h3>
+            <span>Including none</span>
+          </div>
+          <div class="bar-list" id="accessory-stats" aria-label="Accessory distribution"></div>
+        </article>
+        <article class="stat-panel">
+          <div class="panel-heading">
+            <h3>Exact artwork</h3>
+            <span>By item</span>
+          </div>
+          <div class="bar-list" id="copy-stats" aria-label="Artwork copy distribution"></div>
+        </article>
+        <article class="stat-panel stat-panel-numbers">
+          <div class="panel-heading">
+            <h3>Minting</h3>
+            <span>Blocks and sats</span>
+          </div>
+          <dl class="number-list">
+            <div><dt>Block range</dt><dd id="stat-block-range">908,072-908,196</dd></div>
+            <div><dt>Blocks with mints</dt><dd id="stat-mint-blocks">79</dd></div>
+            <div><dt>Unique sats</dt><dd id="stat-unique-sats">9,967</dd></div>
+            <div><dt>Largest mint address</dt><dd id="stat-largest-minter">26</dd></div>
+          </dl>
+        </article>
+        <article class="stat-panel stat-panel-wide">
+          <div class="panel-heading">
+            <h3>Mining pools</h3>
+            <span>Items, not blocks</span>
+          </div>
+          <div class="bar-list bar-list-columns" id="pool-stats" aria-label="Mining pool distribution"></div>
+        </article>
+        <article class="stat-panel stat-panel-wide">
+          <div class="panel-heading">
+            <h3>Fee rates</h3>
+            <span>sat/vB</span>
+          </div>
+          <div class="bar-list bar-list-columns" id="fee-stats" aria-label="Fee rate distribution"></div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer page-shell">
+    <span>LABITBU / 10,000</span>
+    <a href="https://mempool.space/tx/f08fd61d48f79eeb0c4bc9e58f2d7ecad0e20e5d6411b588590cb0480c8e7fbe" target="_blank" rel="noreferrer">satindex</a>
+    <a href="#top">Back to top</a>
+  </footer>
+
+  <dialog class="item-dialog" id="item-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" id="dialog-close" type="button" aria-label="Close item details">Close</button>
+    <div class="dialog-layout">
+      <div class="dialog-artwork">
+        <img id="dialog-image" alt="" width="45" height="59">
+      </div>
+      <div class="dialog-content">
+        <p class="eyebrow" id="dialog-rank">Rarity rank</p>
+        <h2 id="dialog-title">Labitbu #1</h2>
+        <p class="dialog-summary" id="dialog-summary"></p>
+
+        <section class="dialog-section" aria-labelledby="traits-title">
+          <h3 id="traits-title">Visual traits</h3>
+          <dl class="detail-list" id="dialog-traits"></dl>
+        </section>
+
+        <section class="dialog-section" aria-labelledby="provenance-title">
+          <h3 id="provenance-title">Mint provenance</h3>
+          <dl class="detail-list" id="dialog-provenance"></dl>
+          <p class="fine-print">Mint address is the funding input address, not the current owner.</p>
+        </section>
+
+        <div class="dialog-links">
+          <a id="dialog-transaction-link" target="_blank" rel="noreferrer">View transaction</a>
+        </div>
+      </div>
     </div>
-
-  
-</section>
+  </dialog>
 </body>
 </html>
